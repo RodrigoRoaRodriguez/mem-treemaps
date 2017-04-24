@@ -1,0 +1,23 @@
+{
+  "extends": [
+    "airbnb"
+  ],
+  "rules": {
+    "no-plusplus": [ "error", { "allowForLoopAfterthoughts": true } ],
+    "no-mixed-operators": [
+      "error",
+      { 
+        "groups": [ 
+          [ "&", "|", "^", "~", "<<", ">>", ">>>" ], 
+          [ "==", "!=", "===", "!==", ">", ">=", "<", "<=" ], 
+          [ "&&", "||" ], 
+          [ "in", "instanceof" ] 
+        ], 
+        "allowSamePrecedence": true
+      }
+    ],
+    "no-confusing-arrow": [
+      0
+    ]
+  }
+}

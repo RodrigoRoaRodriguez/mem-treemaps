@@ -34,3 +34,21 @@ BACKEND/*.log
 *\#*\#
 BACKEND/.tern-config
 BACKEND/node_modules
+# See https://help.github.com/ignore-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+
+# testing
+/coverage
+
+# production
+/build
+
+# misc
+.DS_Store
+.env
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
