@@ -1,10 +1,30 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import Chart from './Chart/Chart';
-import { getDistroArray } from './utils/DataGenerator';
+import { range } from './utils/Utils';
+import pdfs from './utils/Distributions';
+
 import './App.css';
 
-const distros = getDistroArray({ count: 100, mean: 25, variance: 10 });
+
+
+
+
+const count = 100;
+const xs = range(count);
+function getPdfArgs(pdf) {
+  switch (pdf) {
+    case 'normal': return { count, xs, mean: 50, variance: 20 };
+    case 'logNormal': return { count, xs, mean: 0, variance: 20 };
+    default: return { count, xs, mean: 25, variance: 20 };
+  }
+}
+const samples = Object.keys(pdfs).map(pdf => ({
+  key: pdf,
+  x: xs,
+  y: xs.map(x => pdfs[pdf](getPdfArgs(pdf))(x)),
+}));
+
 
 class App extends Component {
   render() {
@@ -15,7 +35,7 @@ class App extends Component {
           <h2>Statistical Probability Distributions</h2>
         </header>
         <main className="App-content">
-          { distros.map(({ key, x, y }) => <Chart
+          { samples.map(({ key, x, y }) => <Chart
             key={key}
             className={key}
             data={[{ x, y, type: 'bar' }]}
