@@ -4,6 +4,9 @@ const { sqrt, PI, exp, log } = Math;
 const harmonicNumber = n => range(n).reduce((prev, curr) => prev + 1 / (curr + 1), 0);
 
 const PDFS = {
+  single: ({ mean = 0 }) => function normal(x) {
+    return x === mean ? mean : 0;
+  },
   normal: ({ mean = 0, variance = 1 }) => function normal(x) {
     return exp(-((x - mean) ** 2) / (2 * variance)) / sqrt(2 * variance * PI);
   },

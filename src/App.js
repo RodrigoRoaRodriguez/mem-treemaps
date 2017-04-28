@@ -12,6 +12,7 @@ function getPdfArgs(pdf) {
   switch (pdf) {
     case 'normal': return { count, xs, mean: count / 2, variance: 20 };
     case 'logNormal': return { count, xs, mean: 0, variance: 20 };
+    case 'single': return { count, xs, mean: 50, variance: 20 };
     default: return { count, xs, mean: 25, variance: 20 };
   }
 }
