@@ -83,7 +83,7 @@ class App extends Component {
           ].map( sample =>
           <Chart
             className={'variances'}
-            data={sample.data.map(args => (Object.assign(args, { type: 'line' })))}
+            data={sample.data.map(({ y, ...rest }) => ({ y: y.map(n => n * 100), type: 'line', ...rest }))}
             layout={{
               title: sample.title,
               xaxis: { 
