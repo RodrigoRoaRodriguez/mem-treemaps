@@ -1,25 +1,16 @@
 {
-  "name": "statistical-distributions",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "plotly.js": "^1.26.0",
-    "prop-types": "^15.5.8",
-    "react": "^15.5.4",
-    "react-dom": "^15.5.4"
-  },
+  "name": "economic-metaphor-treemap-tilings",
+  "version": "0.0.0",
+  "description": "Treemap tiling algorithms based on the results of perceptual experiments.",
+  "main": "index.js",
+  "repository": "https://github.com/RodrigoRoaRodriguez/economic-metaphor-treemap-tilings",
+  "author": "Rodrigo Roa Rodríguez <rodrigoroarod@gmail.com>",
+  "license": "Apache-2.0",
   "devDependencies": {
-    "eslint": "^3.15.0",
-    "eslint-config-airbnb": "^14.1.0",
+    "eslint-config-airbnb": "^15.0.1",
+    "eslint": "^3.19.0",
     "eslint-plugin-import": "^2.2.0",
-    "eslint-plugin-jsx-a11y": "^3.0.2 || ^4.0.0",
-    "eslint-plugin-react": "^6.9.0",
-    "react-scripts": "0.9.5"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eslint-plugin-jsx-a11y": "^5.0.1",
+    "eslint-plugin-react": "^7.0.1"
   }
 }
