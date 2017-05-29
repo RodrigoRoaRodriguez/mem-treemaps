@@ -1,0 +1,6 @@
+[submodule "src/economic-metaphor-treemap-tilings"]
+	path = src/economic-metaphor-treemap-tilings
+	url = https://github.com/RodrigoRoaRodriguez/economic-metaphor-treemap-tilings
+[submodule "src/statistical-distributions"]
+	path = src/statistical-distributions
+	url = https://github.com/RodrigoRoaRodriguez/statistical-distributions

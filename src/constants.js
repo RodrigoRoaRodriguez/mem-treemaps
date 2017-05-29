@@ -1,0 +1,1 @@
+export const GRANULARITY = 10e4;
