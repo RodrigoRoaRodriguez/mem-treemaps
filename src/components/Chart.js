@@ -1,19 +1,30 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import './Chart.css';
 import plotly from 'plotly.js';
+import styled from 'styled-components';
+
+const Frame = styled.figure`
+  background-color: white;
+  color: black;
+  margin: 1em;
+  `;
+
+
 
 class Chart extends Component {
   componentDidMount() {
     const { data, layout } = this.props;
     plotly.newPlot(this.container, data, layout);
   }
+  componentWillUnmount(){
+    plotly.purge(this.container);
+  }
   render() {
     const { className } = this.props;
     return (
-      <div className="Chart uniform">
-        <figure className="uniform" ref={DOMNode => this.container = DOMNode} />
-      </div>
+      <Frame className={className}>
+        <figure ref={DOMNode => this.container = DOMNode} />
+      </Frame>
     );
   }
 }

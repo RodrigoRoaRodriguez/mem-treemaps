@@ -7,7 +7,9 @@
     "plotly.js": "^1.26.0",
     "prop-types": "^15.5.8",
     "react": "^15.5.4",
-    "react-dom": "^15.5.4"
+    "react-dom": "^15.5.4",
+    "react-router-dom": "^4.1.1",
+    "styled-components": "^2.0.0"
   },
   "devDependencies": {
     "eslint": "^3.15.0",

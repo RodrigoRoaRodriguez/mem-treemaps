@@ -1,11 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import TreemapShowcase from './TreemapShowcase';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { ThemeProvider } from 'styled-components';
 import App from './App';
+import theme from './theme';
 import './index.css';
 
 ReactDOM.render(
-  // <TreemapShowcase />,
-  <App />,
+  <ThemeProvider theme={theme}><App /></ThemeProvider>,
   document.getElementById('root'),
 );

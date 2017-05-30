@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import * as d3 from 'd3';
-import * as treemapTilings from './economic-metaphor-treemap-tilings/index';
-import pdfs from './statistical-distributions/index';
-import { range, combinations } from './statistical-distributions/jsutils/index';
-import { drawTreemap } from './simpleTreemap';
-import { aspectRatio, oaar, foaar, offsetFactor, offsetQuotient, mean, weightedMean } from './treemapMetrics';
-import { GRANULARITY } from './constants';
+import * as treemapTilings from '../economic-metaphor-treemap-tilings/index';
+import pdfs from '../statistical-distributions/index';
+import { range, combinations } from '../statistical-distributions/jsutils/index';
+import { drawTreemap } from '../utils/simpleTreemap';
+import { aspectRatio, oaar, foaar, offsetFactor, offsetQuotient, mean, weightedMean } from '../utils/treemapMetrics';
+import { GRANULARITY } from '../constants';
 
 const metrics = { aspectRatio, oaar, foaar, offsetFactor, offsetQuotient };
 export const aggregates = { mean, weightedMean };
@@ -25,16 +25,16 @@ function test(root, { tilingName, distro, ratio }) {
 
   // console.log('metrics', Object.keys(aggregates), Object.keys(metrics));
   let rows = [];
-  Object.keys(aggregates).map( aggregate =>
+  Object.keys(aggregates).map(aggregate =>
     Object.keys(metrics).map(metric => rows.push([aggregate, metric,
       formatNumber(
-      aggregates[aggregate](
-        root.children, 
-        n => metrics[metric](n, ratio), 
-        n => n.value
+        aggregates[aggregate](
+          root.children,
+          n => metrics[metric](n, ratio),
+          n => n.value
         ))])));
 
-  result += rows.map(str=>str.join(' & ')).join(' \\\\\n')+'\n\\end{tabular}'
+  result += rows.map(str => str.join(' & ')).join(' \\\\\n') + '\n\\end{tabular}'
   console.log(result)
 }
 
@@ -89,7 +89,8 @@ console.log('combinations', combinations([algorithms, distributions]));
 function formatData([distro, tilingName], ratio = PHI) {
   const distribution = pdfs[distro](distroArgs[distro]);
   const data = xs.map(x => distribution(x));
-  return ({ tilingName,
+  return ({
+    tilingName,
     distro,
     ratio,
     data,
@@ -110,11 +111,11 @@ class Showcase extends Component {
             height="80vh"
             width="100%"
             viewBox={`0 0 ${ratio * GRANULARITY} ${ratio * GRANULARITY}`}
-            ref={svg => test(drawTreemap({ svg, ratio, ...rest }).root, { tilingName, distro, ratio})}
+            ref={svg => test(drawTreemap({ svg, ratio, ...rest }).root, { tilingName, distro, ratio })}
           />
         </div>,
-          )
-        }
+        )
+      }
     </div>
     );
   }

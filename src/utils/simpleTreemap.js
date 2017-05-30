@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { GRANULARITY } from './constants';
+import { GRANULARITY } from '../constants';
 // import { getOrdinal } from "../utils/Utils";
 
 const parentDatum = fn => function passDatum() { return fn(d3.select(this.parentNode).datum()); };

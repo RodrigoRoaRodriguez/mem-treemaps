@@ -16,8 +16,7 @@
         "allowSamePrecedence": true
       }
     ],
-    "no-confusing-arrow": [
-      0
-    ]
+    "no-confusing-arrow": 0,
+    "react/prop-types": 0
   }
 }
