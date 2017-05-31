@@ -68,7 +68,7 @@ function formatData([distro, tilingName], ratio = PHI) {
 
 const GRANULARITY = 100;
 const Title = styled.h1`margin: 3em 0 .5em 0`;
-const Container = styled.div`padding: 0 10%`;
+const Container = styled.figure`padding: 0 10%`;
 
 class Showcase extends Component {
   render() {

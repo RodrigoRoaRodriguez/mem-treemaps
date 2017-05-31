@@ -4,3 +4,6 @@
 [submodule "src/statistical-distributions"]
 	path = src/statistical-distributions
 	url = https://github.com/RodrigoRoaRodriguez/statistical-distributions
+[submodule "src/jsutils"]
+	path = src/jsutils
+	url = https://github.com/RodrigoRoaRodriguez/jsutils

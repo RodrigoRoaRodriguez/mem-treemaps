@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
+import styled from 'styled-components';
 import logo from '../images/logo.svg';
 import Chart from '../components/Chart';
 import { normalize, range, sum } from '../statistical-distributions/jsutils/index';
 import * as pdfs from '../statistical-distributions/index';
 
-import './App.css';
 
 const count = 20;
 const xs = range(count).map(x => x + 1);
@@ -19,8 +19,8 @@ function getPdfArgs(pdf) {
   }
 }
 const layout = {
-  width: 1000,
-  height: 500,
+  // width: 1000,
+  height: 600,
   yaxis: {
     ticksuffix: '%',
     title: '$\\text{Total mass}\\quad(\\sum_{n=1}^{100} f(n) = 100\\%)$',
@@ -30,27 +30,26 @@ const layout = {
   },
 }
 
+const Title = styled.h1`margin: 1em 0 .5em 0;`;
+const Container = styled.h1`margin: 10%;`;
 class Distributions extends Component {
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <h2>Probability Density Distributions</h2>
-        </header>
-        <main className="App-content">
           {
             Object.keys(pdfs).map((pdf) => {
               let y = normalize(xs.map(x => pdfs[pdf](getPdfArgs(pdf))(x))).map(n => n * 100);
-              return <Chart
-              key={pdf}
-              className={pdf}
-              data={[{ x:xs, y, type: 'bar' }]}
-              layout={layout}
-            />
+              return <Container>
+                <Title>{ pdf }</Title>
+                <Chart
+                key={pdf}
+                className={pdf}
+                data={[{ x:xs, y, type: 'bar' }]}
+                layout={layout} />
+            </Container>
             }
             )
           }
-        </main>
       </div>
     );
   }
