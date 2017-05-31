@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
-import { eatThePoor, eatTheRich, welfare, subsidy } from '../tiling/index';
-import pdfs from '../../scripts/utils/distributions';
-import { range, map2d, sum } from '../../scripts/utils/Utils';
+import { eatThePoor, eatTheRich, welfare, subsidy } from '../economic-metaphor-treemap-tilings/index';
+import * as pdfs from '../statistical-distributions/index';
+import { range, map2d, sum } from '../statistical-distributions/jsutils/index';
 
 const tilingAlgorithms = {
   Binary: d3.treemapBinary,
@@ -19,7 +19,6 @@ const distroParams = {
 function combinations(arg) {
   const keys = Object.keys(arg);
   const values = keys.map(key => arg[key]);
-
   return values[0].map(a => values[1].map(b => ({ [keys[0]]: a, [keys[1]]: b })));
 }
 

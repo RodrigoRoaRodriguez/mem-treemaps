@@ -1,14 +1,10 @@
 import React, { Component } from 'react';
 import * as d3 from 'd3';
 import * as treemapTilings from '../economic-metaphor-treemap-tilings/index';
-import pdfs from '../statistical-distributions/index';
+import * as pdfs from '../statistical-distributions/index';
 import { range, combinations } from '../statistical-distributions/jsutils/index';
 import { drawTreemap } from '../utils/simpleTreemap';
 import { aspectRatio, oaar, foaar, offsetFactor, offsetQuotient, mean, weightedMean } from '../utils/treemapMetrics';
-import { GRANULARITY } from '../constants';
-
-
-const formatNumber = n => n.toFixed(2)
 
 const PHI = (1 + Math.sqrt(5)) / 2;
 // const count = 100;
@@ -68,19 +64,20 @@ function formatData([distro, tilingName], ratio = PHI) {
   });
 }
 
+const GRANULARITY = 100;
 class Showcase extends Component {
   render() {
     // const { ratio } = this.props;
     return (<div className="test" style={{ padding: '10%' }}>
       {
-        combinations([distributions, algorithms]).map(d => formatData(d, 1)).map(({ tilingName, distro, ratio, ...rest }) => <div key={tilingName + distro + ratio.toFixed(2)}>
+        combinations([distributions, algorithms]).map(d => formatData(d, RATIO)).map(({ tilingName, distro, ratio, ...rest }) => <div key={tilingName + distro + ratio.toFixed(2)}>
           <h1> {tilingName} {distro} {ratio.toFixed(2)} </h1>
           <svg
             id={`${tilingName} ${distro}`}
             height="80vh"
             width="100%"
-            viewBox={`0 0 ${ratio * GRANULARITY} ${ratio * GRANULARITY}`}
-            ref={svg => drawTreemap({ svg, ratio, ...rest })}
+            viewBox={`0 0 ${ratio * GRANULARITY} ${GRANULARITY}`}
+            ref={svg => drawTreemap({ svg, ratio, granularity:GRANULARITY, ...rest })}
           />
         </div>,
           )

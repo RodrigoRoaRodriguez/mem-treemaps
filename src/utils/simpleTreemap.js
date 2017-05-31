@@ -1,5 +1,4 @@
 import * as d3 from 'd3';
-import { GRANULARITY } from '../constants';
 // import { getOrdinal } from "../utils/Utils";
 
 const parentDatum = fn => function passDatum() { return fn(d3.select(this.parentNode).datum()); };
@@ -22,7 +21,7 @@ function getColorScale(values, type) {
 const ARFormat = number => number >= 0.1 ? number.toPrecision(3) : number.toExponential(1);
 const perFormat = number => (number * (number >= 1 / 100 ? 100 : number >= 1 / 1000 ? 1000 : 1e6)).toPrecision(3) + (number >= 1 / 100 ? '%' : number >= 1 / 1000 ? '‰' : 'ppm');
 
-export function calculateTreemap(data, tile, ratio) {
+export function calculateTreemap(data, tile, ratio, granularity) {
   // The lines below make structured that data into a hierachical datatype
   const root = { key: 'root', children: data };
   // const hierarchicalData = d3.shuffle(d3.hierarchy(root).sum(d => d));
@@ -30,7 +29,7 @@ export function calculateTreemap(data, tile, ratio) {
 
 
   // The layout adds the info necessary to draw the treemap
-  const makeTreemap = d3.treemap().size([ratio * GRANULARITY, 1 * GRANULARITY]).padding(0.25).tile(tile);
+  const makeTreemap = d3.treemap().size([ratio * granularity, granularity]).padding(0.25).tile(tile);
   return makeTreemap(hierarchicalData);
 }
 
@@ -39,7 +38,8 @@ export function drawTreemap({
   tile = d3.treemapSquarify,
   ratio = 3 / 2,
   scale = 'log',
-  root = calculateTreemap(data, tile, ratio),
+  granularity = 100,
+  root = calculateTreemap(data, tile, ratio, granularity),
   svg = document.createElement('svg'),
 } = {},
 ) {

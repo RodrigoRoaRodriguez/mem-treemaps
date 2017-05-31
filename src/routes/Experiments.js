@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import * as d3 from 'd3';
 import * as treemapTilings from '../economic-metaphor-treemap-tilings/index';
-import pdfs from '../statistical-distributions/index';
+import * as pdfs from '../statistical-distributions/index';
 import { range, combinations } from '../statistical-distributions/jsutils/index';
 import { drawTreemap } from '../utils/simpleTreemap';
 import { aspectRatio, oaar, foaar, offsetFactor, offsetQuotient, mean, weightedMean } from '../utils/treemapMetrics';
 import { GRANULARITY } from '../constants';
+import * as something from '../utils/testRunner';
 
 const metrics = { aspectRatio, oaar, foaar, offsetFactor, offsetQuotient };
 export const aggregates = { mean, weightedMean };
