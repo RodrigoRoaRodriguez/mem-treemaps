@@ -17,6 +17,8 @@
       }
     ],
     "no-confusing-arrow": 0,
-    "react/prop-types": 0
+    "react/prop-types": 0,
+    "jsx-filename-extension":0,
+    "no-return-assign":0
   }
 }
