@@ -7,23 +7,42 @@ import subsidyRaw from './src/subsidy';
 
 export const phi = (1 + Math.sqrt(5)) / 2;
 
-function customizer(algorithm, ratio = phi, maxFlexibility = 1) {
+function ratioCustomizer(algorithm, ratio = phi) {
   function tilingFormat(parent, x0, y0, x1, y1) {
-    algorithm(parent, x0, y0, x1, y1, ratio, maxFlexibility);
+    algorithm(parent, x0, y0, x1, y1, ratio);
   }
   tilingFormat.ratio = function (customRatio) {
-    return customizer(algorithm, customRatio, maxFlexibility);
-  };
-  tilingFormat.tax = function (customTax) {
-    return customizer(algorithm, ratio, customTax);
+    return ratioCustomizer(algorithm, customRatio);
   };
   return tilingFormat;
 }
+
+function thirdOrderCustomizer(algorithm, _ratio = phi, _budget, _misery, _step) {
+  function tilingFormat(parent, x0, y0, x1, y1) {
+    algorithm(parent, x0, y0, x1, y1, _ratio);
+  }
+  tilingFormat.ratio = function setRatio(ratio) {
+    return thirdOrderCustomizer(algorithm, ratio, _budget, _misery, _step);
+  };
+  tilingFormat.budget = function setBudget(budget) {
+    return thirdOrderCustomizer(algorithm, _ratio, budget, _misery, _step);
+  };
+  tilingFormat.misery = function setMisery(misery) {
+    return thirdOrderCustomizer(algorithm, _ratio, _budget, misery, _step);
+  };
+  tilingFormat.step = function setStep(step) {
+    return thirdOrderCustomizer(algorithm, _ratio, _budget, _misery, step);
+  };
+
+  return tilingFormat;
+}
+
+
 // First order
 export { slice, dice };
 // Second order
-export const eatThePoor = customizer(eatThePoorRaw);
-export const eatTheRich = customizer(eatTheRichRaw);
+export const eatThePoor = ratioCustomizer(eatThePoorRaw);
+export const eatTheRich = ratioCustomizer(eatTheRichRaw);
 // Third order
-export const subsidy = customizer(subsidyRaw);
-export const welfare = customizer(welfareRaw);
+export const subsidy = thirdOrderCustomizer(subsidyRaw);
+export const welfare = thirdOrderCustomizer(welfareRaw);
