@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
-import Chart from '../components/Chart';
 import { range, sum } from '../statistical-distributions/jsutils/index';
 import * as pdfs from '../statistical-distributions/index';
-
-const count = 20;
-const xs = range(count).map(x => x + 1);
+import Chart from '../components/Chart';
+import Treemap from '../components/Treemap';
 
 const distros = [
   pdfs.normal({ variance: count / 4, mean: count / 2 }),
@@ -24,7 +22,12 @@ const samples = distros.map((pdf) => {
 ;
 });
 
-/*class Temp extends Component {
+const count = 20;
+const xs = range(count).map(x => x + 1);
+let ys = xs.map(x => pdf(x));
+ys = ys.map(n => n / sum(ys));
+
+class Temp extends Component {
   render() {
     return (
       <div className="App">
@@ -32,29 +35,14 @@ const samples = distros.map((pdf) => {
           <h2>Probability Density Distributions</h2>
         </header>
         <main className="App-content">
-          { <Chart
-            key={'distribution'}
-            data={[{ x, y: y.map(n => n * 100), type: 'bar' }]}
-            layout={{
-              width: 1000,
-              height: 500,
-                // title: key,
-              yaxis: {
-                ticksuffix: '%',
-                title: '$\\text{Total mass}\\quad(\\sum_{n=1}^{100} f(n) = 100\\%)$',
-              },
-              xaxis: {
-                title: '$Index$',
-              },
-            }}
-          />
+         <Treemap
 
-          }
+         /> 
         </main>
       </div>
     );
   }
 }
-*/
 
-export default undefined; //Temp;
+
+export default Temp;

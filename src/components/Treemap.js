@@ -9,16 +9,18 @@ class Treemap extends Component {
       className,
       ratio,
       granularity,
-      ...rest
+      height,
+      width,
+      treemapArgs,
     } = this.props;
 
     return (
       <svg
         className={className}
-        height="80vh"
-        width="100%"
+        height={height}
+        width={width}
         viewBox={`0 0 ${ratio * granularity} ${granularity}`}
-        ref={svg => drawTreemap({ svg, ...rest })}
+        ref={svg => drawTreemap({ svg, ratio, granularity, ...treemapArgs })}
       />
     );
   }
@@ -27,6 +29,8 @@ class Treemap extends Component {
 Treemap.defaultProps = {
   ratio: 3 / 2,
   granularity: 100,
+  height: '100%',
+  width: '100%',
 };
 
 
