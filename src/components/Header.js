@@ -64,8 +64,9 @@ const Name = styled.div`
     margin: 0;
     font-weight: 300;
   }
-  & > h3 {
+  & > h2 {
     margin: 0;
+    font-size: 1.4em;
     color: gray;
     font-weight: 300;
   }
@@ -82,7 +83,7 @@ const Header = ({ routes }) => (
       <NavItem to={'/'} className="name" color="#000">
         <Name>
           <h1> Rodrigo Roa Rodríguez </h1>
-          <h3> Data Visualization, UX & Web-Development</h3>
+          <h2> Macro-Economic Metaphor Treemaps </h2>
         </Name>
       </NavItem>
     </Brand>

@@ -1,22 +1,8 @@
 import * as d3 from 'd3';
+import colorScale from './colorScale';
 // import { getOrdinal } from "../utils/Utils";
 
 const parentDatum = fn => function passDatum() { return fn(d3.select(this.parentNode).datum()); };
-
-const scales = {
-  log: { fn: d3.scaleLog(), color: d3.interpolateWarm },
-  linear: { fn: d3.scaleLinear(), color: d3.interpolateCool },
-  index: { fn: d3.scaleLinear(), color: d3.interpolateViridis },
-};
-
-function getColorScale(values, type) {
-  const { color, fn } = scales[type];
-  const scale = fn.range([1, 0]).domain(
-    type === 'index' ? [0, values.length] :
-    [Math.max(d3.min(values), 1e-10), d3.max(values)],
-    );
-  return (value, index) => d3.scaleSequential(color)(scale(type === 'index' ? index : value));
-}
 
 const ARFormat = number => number >= 0.1 ? number.toPrecision(3) : number.toExponential(1);
 const perFormat = number => (number * (number >= 1 / 100 ? 100 : number >= 1 / 1000 ? 1000 : 1e6)).toPrecision(3) + (number >= 1 / 100 ? '%' : number >= 1 / 1000 ? '‰' : 'ppm');
@@ -56,7 +42,7 @@ export function drawTreemap({
       .attr('width', d => d.x1 - d.x0)
       .attr('height', d => d.y1 - d.y0)
       // .attr('fill', (_, i) => colorScale(i));
-      .attr('fill', (d, i) => getColorScale(data, scale)(d.data, i));
+      .attr('fill', (d, i) => colorScale(data, scale)(d.data, i));
 
   const fontSize = n => Math.min((n.y1 - n.y0) / 2.3, (n.x1 - n.x0) / 3.5);
   const totalValue = d3.sum(data);

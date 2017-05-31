@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import logo from '../images/logo.svg';
 import Chart from '../components/Chart';
-import { normalize, range, sum } from '../statistical-distributions/jsutils/index';
+import { normalize, range, sum, decamelize } from '../jsutils/index';
 import * as pdfs from '../statistical-distributions/index';
-
+import colorScale from '../utils/colorScale';
+import {font} from '../theme';
 
 const count = 20;
 const xs = range(count).map(x => x + 1);
@@ -19,18 +20,19 @@ function getPdfArgs(pdf) {
   }
 }
 const layout = {
+  font: { family:font.heading, size: 16 },
   // width: 1000,
   height: 600,
   yaxis: {
     ticksuffix: '%',
-    title: '$\\text{Total mass}\\quad(\\sum_{n=1}^{100} f(n) = 100\\%)$',
+    title: `Portion of total density`,
   },
   xaxis: {
-    title: '$Index$',
+    title: 'Index',
   },
 }
 
-const Title = styled.h1`margin: 1em 0 .5em 0;`;
+const Title = styled.h2`margin: 3em 0 .5em 0;`;
 const Container = styled.h1`margin: 10%;`;
 class Distributions extends Component {
   render() {
@@ -39,17 +41,16 @@ class Distributions extends Component {
           {
             Object.keys(pdfs).map((pdf) => {
               let y = normalize(xs.map(x => pdfs[pdf](getPdfArgs(pdf))(x))).map(n => n * 100);
+              let color = colorScale(y, 'log');
               return <Container>
-                <Title>{ pdf }</Title>
+                <Title>{ decamelize(pdf) }</Title>
                 <Chart
                 key={pdf}
                 className={pdf}
-                data={[{ x:xs, y, type: 'bar' }]}
+                data={[{ x:xs, y, type: 'bar', marker:{color:y.map(color)}}]}
                 layout={layout} />
             </Container>
-            }
-            )
-          }
+            })}
       </div>
     );
   }

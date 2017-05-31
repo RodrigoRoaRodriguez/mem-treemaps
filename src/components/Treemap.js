@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import styled from 'styled-components';
 import { drawTreemap } from '../utils/simpleTreemap';
 
 
@@ -22,7 +21,7 @@ class Treemap extends Component {
         viewBox={`0 0 ${ratio * granularity} ${granularity}`}
         ref={svg => drawTreemap({ svg, ratio, granularity, ...treemapArgs })}
       />
-    );
+  );
   }
 }
 
