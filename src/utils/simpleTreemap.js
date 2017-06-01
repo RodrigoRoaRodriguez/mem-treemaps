@@ -7,15 +7,25 @@ const parentDatum = fn => function passDatum() { return fn(d3.select(this.parent
 const ARFormat = number => number >= 0.1 ? number.toPrecision(3) : number.toExponential(1);
 const perFormat = number => (number * (number >= 1 / 100 ? 100 : number >= 1 / 1000 ? 1000 : 1e6)).toPrecision(3) + (number >= 1 / 100 ? '%' : number >= 1 / 1000 ? '‰' : 'ppm');
 
-export function calculateTreemap(data, tile, ratio, granularity) {
+export function calculateTreemap({
+  data = [1, 2, 3],
+  accessor = id => id,
+  tile = d3.treemapSquarify,
+  ratio = 3 / 2,
+  padding = 0,
+  granularity = 1,
+  }) {
   // The lines below make structured that data into a hierachical datatype
   const root = { key: 'root', children: data };
   // const hierarchicalData = d3.shuffle(d3.hierarchy(root).sum(d => d));
-  const hierarchicalData = d3.hierarchy(root).sum(d => d).sort((a, b) => b.value - a.value);
-
+  const hierarchicalData = d3.hierarchy(root).sum(accessor).sort((a, b) => b.value - a.value);
 
   // The layout adds the info necessary to draw the treemap
-  const makeTreemap = d3.treemap().size([ratio * granularity, granularity]).padding(0.25).tile(tile);
+  const makeTreemap = d3.treemap()
+    .size([ratio * granularity, granularity])
+    .padding(padding)
+    .tile(tile);
+
   return makeTreemap(hierarchicalData);
 }
 
@@ -24,12 +34,13 @@ export function drawTreemap({
   tile = d3.treemapSquarify,
   ratio = 3 / 2,
   scale = 'log',
+  padding = 0.25,
   granularity = 100,
-  root = calculateTreemap(data, tile, ratio, granularity),
+  root = calculateTreemap({data, tile, ratio, padding, granularity}),
   svg = document.createElement('svg'),
 } = {},
 ) {
-  const perTime = d3.select(svg)
+  const perDatum = d3.select(svg)
       // HACK : put all styling in svg for the sake of the SVG exporter
       .style('font-family', "'FiraSansCondensed-Regular', 'Fira Sans Condensed', sans-serif")
       .style('fill', 'white')
@@ -37,7 +48,7 @@ export function drawTreemap({
       .data(root.leaves())
       .enter().append('g')
       .attr('transform', d => `translate(${d.x0},${d.y0})`);
-  perTime.append('rect')
+  perDatum.append('rect')
       .attr('id', d => d.data.key)
       .attr('width', d => d.x1 - d.x0)
       .attr('height', d => d.y1 - d.y0)
@@ -46,7 +57,7 @@ export function drawTreemap({
 
   const fontSize = n => Math.min((n.y1 - n.y0) / 2.3, (n.x1 - n.x0) / 3.5);
   const totalValue = d3.sum(data);
-  const labels = perTime.append('text')
+  const labels = perDatum.append('text')
       .style('font-size', fontSize);
 
   labels.selectAll('tspan.time').data((n, i) => [
@@ -64,5 +75,5 @@ export function drawTreemap({
       // .attr('x', '0.1em')
       .text(str => str);
 
-      return { data, tile, ratio, scale, root, svg};
+  return { data, tile, ratio, scale, root, svg };
 }
