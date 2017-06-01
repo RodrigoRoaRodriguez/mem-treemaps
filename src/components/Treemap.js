@@ -11,6 +11,7 @@ class Treemap extends Component {
       height,
       width,
       treemapArgs,
+      callback,
     } = this.props;
 
     return (
@@ -19,7 +20,8 @@ class Treemap extends Component {
         height={height}
         width={width}
         viewBox={`0 0 ${ratio * granularity} ${granularity}`}
-        ref={svg => drawTreemap({ svg, ratio, granularity, ...treemapArgs })}
+        ref={svg => callback(drawTreemap({ svg, ratio, granularity, ...treemapArgs }))
+        }
       />
   );
   }
@@ -30,6 +32,7 @@ Treemap.defaultProps = {
   granularity: 100,
   height: '100%',
   width: '100%',
+  callback: id => id,
 };
 
 

@@ -1,126 +1,86 @@
 import React, { Component } from 'react';
+import styled from 'styled-components';
 import * as d3 from 'd3';
 import * as treemapTilings from '../economic-metaphor-treemap-tilings/index';
 import * as pdfs from '../statistical-distributions/index';
 import { range, combinations } from '../statistical-distributions/jsutils/index';
 import { drawTreemap } from '../utils/simpleTreemap';
 import { aspectRatio, oaar, foaar, offsetFactor, offsetQuotient, mean, weightedMean } from '../utils/treemapMetrics';
-import { GRANULARITY } from '../constants';
-import * as something from '../utils/testRunner';
+import Treemap from '../components/Treemap';
 
-const metrics = { aspectRatio, oaar, foaar, offsetFactor, offsetQuotient };
-export const aggregates = { mean, weightedMean };
+// const count = 100;
+const count = 20;
+const xs = range(count);
+const RATIO = 1;
 
-const formatNumber = n => n.toFixed(2)
-// const formatNumber = n => n.toExponential(2)
+const distroArgs = {
+  normal: { count, variance: count / 4, mean: count / 2, scale: 'linear' },
+};
+
+const tilingAlgorithms = {
+  Slice: d3.treemapSlice,
+  Dice: d3.treemapDice,
+};
+
+const Title = styled.h1`margin: 3em 0 .5em 0;`;
+const Container = styled.figure`margin: 10%;`;
+class Showcase extends Component {
+  render() {
+    return (<Container>
+      {
+        [
+          ['Slice', 'normal'],
+          ['Dice', 'normal'],
+        ].map(([tilingName, distro]) => {
+            const distribution = pdfs[distro](distroArgs[distro]);
+            return (<div key={tilingName + distro}>
+              <Title> {tilingName} {distro} {RATIO.toFixed(2)} </Title>
+              <Treemap
+                className={`${tilingName}-${distro}`}
+                height="60vh"
+                ratio={RATIO}
+                treemapArgs={{
+                  data: xs.map(distribution),
+                  tile: tilingAlgorithms[tilingName],
+                  scale: distroArgs[distro].scale,
+                }}
+                granularity={100000}
+                callback={results => test(results.root, { tilingName, distro, RATIO })}
+              />
+            </div>);
+          })
+
+      }
+    </Container>
+    );
+  }
+}
 
 function test(root, { tilingName, distro, ratio }) {
+  const metrics = { aspectRatio, oaar, foaar, offsetFactor, offsetQuotient };
+  const aggregates = { mean, weightedMean };
+  const formatNumber = n => n === undefined ? 'undefined' : n.toFixed(2);
+
   let result = `
   \\begin{tabular}{llr}
   \\toprule
   \\multicolumn{2}{c}{Parameters} \\\\
   \\cmidrule(r){1-2}
-  Aggregate    & Mean & Value \\\\
+  Aggregate & Mean & Value \\\\
   \\midrule
-  `
-
-  // console.log('metrics', Object.keys(aggregates), Object.keys(metrics));
-  let rows = [];
+  `;
+  const rows = [];
   Object.keys(aggregates).map(aggregate =>
     Object.keys(metrics).map(metric => rows.push([aggregate, metric,
       formatNumber(
         aggregates[aggregate](
           root.children,
-          n => metrics[metric](n, ratio),
-          n => n.value
+          n => metrics[metric](n, RATIO),
+          n => n.value,
         ))])));
 
-  result += rows.map(str => str.join(' & ')).join(' \\\\\n') + '\n\\end{tabular}'
-  console.log(result)
+  result += `${rows.map(str => str.join(' & ')).join(' \\\\\n')}\n\\end{tabular}`;
+  console.log(result);
 }
-
-const PHI = (1 + Math.sqrt(5)) / 2;
-// const count = 100;
-const count = 20;
-const xs = range(count);
-
-const distroArgs = {
-  // zipf: { count, s:5, scale: 'log' },
-  uniform: { count, scale: 'index' },
-  // normal: { count, variance: count / 4, mean: count / 2, scale: 'linear' },
-  lognormal: { count, variance: count / 2, mean: count / 2, scale: 'linear' },
-  normal: { count, variance: count / 4, mean: count / 2, scale: 'linear' }, // Experiment 1
-  // normal: { count, variance: Math.sqrt(2), mean: 1, scale: 'linear' }, // The singularity
-};
-
-// const RATIO = 1.5;
-const RATIO = 1;
-
-const tilingAlgorithms = {
-  Slice: d3.treemapSlice,
-  Dice: d3.treemapDice,
-  'Slice and Dice': d3.treemapSliceDice,
-  Binary: d3.treemapBinary,
-  Squarify: d3.treemapSquarify.ratio(RATIO),
-  'Eat the Poor': treemapTilings.eatThePoor.ratio(RATIO),
-  'Eat the Rich': treemapTilings.eatTheRich.ratio(RATIO),
-  Welfare: treemapTilings.welfare.ratio(RATIO),
-  Subsidy: treemapTilings.subsidy.ratio(RATIO),
-};
-
-const algorithms = [
-  'Slice',
-  'Dice',
-  // 'Slice and Dice',
-  // 'Squarify',
-  // 'Binary',
-  // 'Eat the Poor',
-  // 'Eat the Rich',
-  // 'Subsidy',
-  // 'Welfare',
-];
-const distributions = [
-  'normal',
-  // 'uniform',
-  // 'zipf',
-];
-
-console.log('combinations', combinations([algorithms, distributions]));
-
-function formatData([distro, tilingName], ratio = PHI) {
-  const distribution = pdfs[distro](distroArgs[distro]);
-  const data = xs.map(x => distribution(x));
-  return ({
-    tilingName,
-    distro,
-    ratio,
-    data,
-    tile: tilingAlgorithms[tilingName],
-    scale: distroArgs[distro].scale,
-  });
-}
-
-class Showcase extends Component {
-  render() {
-    // const { ratio } = this.props;
-    return (<div className="test" style={{ padding: '10%' }}>
-      {
-        combinations([distributions, algorithms]).map(d => formatData(d, 1)).map(({ tilingName, distro, ratio, ...rest }) => <div key={tilingName + distro + ratio.toFixed(2)}>
-          <h1> {tilingName} {distro} {ratio.toFixed(2)} </h1>
-          <svg
-            id={`${tilingName} ${distro}`}
-            height="80vh"
-            width="100%"
-            viewBox={`0 0 ${ratio * GRANULARITY} ${ratio * GRANULARITY}`}
-            ref={svg => test(drawTreemap({ svg, ratio, ...rest }).root, { tilingName, distro, ratio })}
-          />
-        </div>,
-        )
-      }
-    </div>
-    );
-  }
-}
-
 
 export default Showcase;
