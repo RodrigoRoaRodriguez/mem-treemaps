@@ -30,13 +30,14 @@ export function calculateTreemap({
 }
 
 export function drawTreemap({
-  data = [],
+  data = [1, 2, 3],
+  accessor = id => id,
   tile = d3.treemapSquarify,
   ratio = 3 / 2,
   scale = 'log',
   padding = 0.25,
   granularity = 100,
-  root = calculateTreemap({data, tile, ratio, padding, granularity}),
+  root = calculateTreemap({data, accessor, tile, ratio, padding, granularity}),
   svg = document.createElement('svg'),
 } = {},
 ) {
@@ -53,7 +54,7 @@ export function drawTreemap({
       .attr('width', d => d.x1 - d.x0)
       .attr('height', d => d.y1 - d.y0)
       // .attr('fill', (_, i) => colorScale(i));
-      .attr('fill', (d, i) => colorScale(data, scale)(d.data, i));
+      .attr('fill', (d, i) => colorScale(data.map(accessor), scale)(accessor(d.data), i));
 
   const fontSize = n => Math.min((n.y1 - n.y0) / 2.3, (n.x1 - n.x0) / 3.5);
   const totalValue = d3.sum(data);

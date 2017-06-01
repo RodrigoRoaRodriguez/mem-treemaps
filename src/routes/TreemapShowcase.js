@@ -24,8 +24,8 @@ const distroArgs = {
 const RATIO = 1.5;
 
 const tilingAlgorithms = {
-  // Slice: d3.treemapSlice,
-  // Dice: d3.treemapDice,
+  Slice: d3.treemapSlice,
+  Dice: d3.treemapDice,
   'Slice and Dice': d3.treemapSliceDice,
   Binary: d3.treemapBinary,
   Squarify: d3.treemapSquarify.ratio(RATIO),

@@ -67,7 +67,7 @@ const Name = styled.div`
   & > h2 {
     margin: 0;
     font-size: 1.4em;
-    color: gray;
+    color: #888;
     font-weight: 300;
   }
 `;

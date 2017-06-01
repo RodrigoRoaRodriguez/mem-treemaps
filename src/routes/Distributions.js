@@ -14,7 +14,9 @@ function getPdfArgs(pdf) {
     // case 'normal': return { count, xs, mean: count / 2, variance: 20 };
     // case 'normal': return { count, variance: Math.sqrt(2), mean: 1 };
     case 'normal': return { variance: count / 4, mean: count / 2 };
-    case 'logNormal': return { count, xs, mean: 0, variance: 20 };
+    case 'logNormal': return { count, xs, mean: count / 4, variance: count/2 };
+    case 'symmetricNormalBimodal': return { count, xs, mean: count / 8, variance: count/4 };
+    case 'symmetricNormalTrimodal': return { count, xs, mean: count / 12, variance: count/8 };
     case 'single': return { count, xs, mean: 50, variance: 20 };
     default: return { count, xs, mean: count / 2, variance: count / 4 };
   }

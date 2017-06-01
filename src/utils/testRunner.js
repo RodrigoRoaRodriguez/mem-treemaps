@@ -48,7 +48,7 @@ function toTreemap(data, tiling) {
   const hierarchicalData = d3.hierarchy(root).sum(d => d).sort((a, b) => b.value - a.value);
 
   // The layout adds the info necessary to draw the treemap
-  const makeTreemap = d3.treemap().size([ratio, 1]).padding([0]).tile(tilingAlgorithms[tiling]);
+  const makeTreemap = d3.treemap().size([ratio, 1]).tile(tilingAlgorithms[tiling]);
 
   const treemapRoot = makeTreemap(hierarchicalData, d => d);
   return treemapRoot.children;
