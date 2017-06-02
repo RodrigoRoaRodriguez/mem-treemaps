@@ -54,10 +54,6 @@ const Brand = styled.div`
   background: #eee;
   flex: 1 0 24em;
   align-items: center;
-  & > img {
-    height: 3em;
-    margin: 0 1em;
-  }
 `;
 const Name = styled.div` 
   & > h1 {
@@ -72,6 +68,11 @@ const Name = styled.div`
   }
 `;
 
+const Logo = styled.img`
+    height: 3em;
+    margin: 0 1em;
+    `;
+
 const Space = styled.div`flex:8;`;
 
 const COLORS = ['#e91e63', '#ffc107', '#4caf50', '#2196f3'];
@@ -80,7 +81,7 @@ const Header = ({ routes }) => (
   <Navigation>
     <Brand>
       <a href="https://github.com/RodrigoRoaRodriguez">
-        <img src={logo} className="App-logo" alt="logo" />
+        <Logo src={logo} className="App-logo" alt="logo" />
       </a>
       <NavItem to={'/'} className="name" color="#000">
         <Name>
