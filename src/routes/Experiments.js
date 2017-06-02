@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import * as pdfs from '../statistical-distributions/index';
-import { range, combinations, decamelize, normalize } from '../jsutils/index';
+import { range, combinations, decamelize, normalize, percentalize } from '../jsutils/index';
 import { calculateTreemap } from '../utils/simpleTreemap';
 import { aspectRatio, oaar, foaar, offsetFactor, offsetQuotient, mean, weightedMean } from '../utils/treemapMetrics';
 import Treemap from '../components/Treemap';
@@ -10,7 +10,9 @@ import { font as fontFamily } from '../theme';
 import Chart from '../components/Chart';
 import Table from '../components/SimpleTable';
 import tilingAlgorithms from '../utils/tilingsIndex';
-import {aggregateMetrics, metricCols} from '../utils/columns';
+import { aggregateMetrics, metricCols } from '../utils/columns';
+import * as d3 from 'd3';
+
 
 const Body = styled.main`
   flex-grow: 1;
@@ -146,13 +148,8 @@ export const Experiment2 = () => {
   const layout = {
     font,
     height,
-    yaxis: {
-      ticksuffix: '%',
-      title: 'Portion of total density',
-    },
-    xaxis: {
-      title: 'Index',
-    },
+    yaxis: { ticksuffix: '%', title: 'Portion of total density' },
+    xaxis: { title: 'Index' },
   };
 
 
@@ -184,9 +181,7 @@ export const Experiment2 = () => {
           type: 'linear',
           title: 'Aspect Ratio',
         },
-        xaxis: {
-          title: 'Descending by value',
-        },
+
       })}
     />
     <Heading>Bimodal distribution for comparizon </Heading>
@@ -210,11 +205,33 @@ export const Experiment2 = () => {
   );
 };
 
+export const Experiment3 = () => {
+  const means = range(50);
+  const variances = range(21).map(n => 2 ** ((n - 8) / 2));
+
+  const expIncrements = variances.map(variance => pdfs.normal({ variance, mean: 50 }));
+
+  const x = range(30).map(n => n + 35);
+  return (<Container>
+    <Heading>Normal distribution with exponential variance increments (μ = 50) </Heading>
+    <Chart
+        data={expIncrements.map((pdf, i) => ({
+          type: 'line',
+          name: `𝜎 = 2^${  (i-8)/2}`,
+          x,
+          y: percentalize(x.map(n => pdf(n))),
+        }))}
+      layout={{ yaxis: { ticksuffix: '%', title: 'Portion of total density' }}}
+      />
+  </Container>
+  );
+};
+
 
 const allExperiments = () => (<Body>
-  <Experiment1 />
-  <Experiment2 />
-  {/* <Experiment3 />*/}
+  {/* <Experiment1 />
+  <Experiment2 />*/}
+  <Experiment3 />
 </Body>);
 
 export default allExperiments;

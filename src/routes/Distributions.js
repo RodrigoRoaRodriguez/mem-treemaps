@@ -45,7 +45,7 @@ class Distributions extends Component {
             Object.keys(pdfs).map((pdf) => {
               const y = normalize(xs.map(x => pdfs[pdf](getPdfArgs(pdf))(x))).map(n => n * 100);
               const color = colorScale(y, 'log');
-              return (<Container>
+              return (<Container key={pdf}>
                 <Title>{ decamelize(pdf) }</Title>
                 <Chart
                 key={pdf}
