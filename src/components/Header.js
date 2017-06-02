@@ -79,7 +79,9 @@ const COLORS = ['#e91e63', '#ffc107', '#4caf50', '#2196f3'];
 const Header = ({ routes }) => (
   <Navigation>
     <Brand>
-      <img src={logo} className="App-logo" alt="logo" />
+      <a href="https://github.com/RodrigoRoaRodriguez">
+        <img src={logo} className="App-logo" alt="logo" />
+      </a>
       <NavItem to={'/'} className="name" color="#000">
         <Name>
           <h1> Rodrigo Roa Rodríguez </h1>

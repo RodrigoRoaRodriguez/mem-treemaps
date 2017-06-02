@@ -9,6 +9,7 @@
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
     "react-router-dom": "^4.1.1",
+    "react-table": "^6.0.5",
     "styled-components": "^2.0.0"
   },
   "devDependencies": {

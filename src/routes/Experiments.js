@@ -3,13 +3,14 @@ import styled from 'styled-components';
 import * as d3 from 'd3';
 import * as treemapTilings from '../economic-metaphor-treemap-tilings/index';
 import * as pdfs from '../statistical-distributions/index';
-import { range, combinations, decamelize } from '../jsutils/index';
+import { range, combinations, decamelize, normalize } from '../jsutils/index';
 import { calculateTreemap } from '../utils/simpleTreemap';
 import { aspectRatio, oaar, foaar, offsetFactor, offsetQuotient, mean, weightedMean } from '../utils/treemapMetrics';
 import Treemap from '../components/Treemap';
 import colorScale from '../utils/colorScale';
 import { font as fontFamily } from '../theme';
 import Chart from '../components/Chart';
+import Table from '../components/SimpleTable';
 
 // const count = 100;
 const tilingAlgorithms = {
@@ -24,18 +25,69 @@ const tilingAlgorithms = {
   Subsidy: treemapTilings.subsidy,
 };
 
-const Title = styled.h1`margin: 3em 0 .5em 0;`;
-const Heading = styled.h2`margin: .5em 0 .5em 0; color: #888;`;
-const Body = styled.main`margin: 0 10%;`;
-const Container = styled.figure`margin: 10% 0;`;
+const columns = [{
+  Header: 'Parameters',
+  columns: [{
+    Header: 'Aggregate',
+    id: 'aggregate',
+    accessor: n => decamelize(n.aggregate),
+  }, {
+    Header: 'Metric',
+    id: 'metric',
+    accessor: n => n.metric.includes('oaar') ? n.metric.toUpperCase() : decamelize(n.metric),
+  }],
+}, {
+  Header: 'Value',
+  columns: [{
+    Header: 'Ideal',
+    id: 'ideal',
+    accessor: n => n.ideal.toPrecision(3)
+  },{
+    Header: 'Value',
+    id: 'value',
+    accessor: n => n.value.toPrecision(3)
+  }] },
+];
+
+const Body = styled.main`
+  flex-grow: 1;
+  margin: 0 10vw;
+  *:first-child{ margin-top: 2em; }
+`;
+const Container = styled.figure`
+  *:first-child{ margin-top: 0em; }
+  & > h1+h2 { margin-top: 0em; }
+`;
+const Title = styled.h1`margin: 4em 0 .5em 0;`;
+const Heading = styled.h2`margin: 3em 0 .5em 0; color: #888;`;
+const Sub = styled.h3`margin-bottom: .5em; color: #AAA;`;
 
 const font = { family: fontFamily.heading, size: 16 };
 const height = 600;
 
 const toLatex = rows => `${rows.map(row => row.join(' & ')).join(' \\\\\n')}`;
 
-// TODO: html table
-function test(root, ratio) {
+function aggregateMetrics(root, ratio) {
+  const metrics = { aspectRatio, oaar, foaar, offsetFactor, offsetQuotient };
+  const aggregates = { mean, weightedMean };
+  const formatNumber = n => n === undefined ? 'undefined' : n.toPrecision(2);
+
+  const rows = combinations([Object.keys(aggregates), Object.keys(metrics)])
+    .map(([aggregate, metric]) => ({
+      aggregate,
+      metric,
+      ideal: metric.includes('offset') ? 1
+      : metric === 'foaar' ? 1 / ratio : ratio,
+      value: aggregates[aggregate](
+          root.children,
+          n => metrics[metric](n, ratio),
+          n => n.value,
+        ),
+    }));
+
+  return rows;
+}
+function thesisTable(root, ratio) {
   const metrics = { aspectRatio, oaar, foaar, offsetFactor, offsetQuotient };
   const aggregates = { mean, weightedMean };
   const formatNumber = n => n === undefined ? 'undefined' : n.toPrecision(2);
@@ -91,7 +143,7 @@ export const Experiment1 = () => {
         granularity: 100,
         ratio: RATIO,
       });
-      test(root, RATIO);
+      aggregateMetrics(root, RATIO);
       const aspectRatios = root.children.map(aspectRatio);
       const arColor = colorScale(aspectRatios, 'log');
 
@@ -122,9 +174,11 @@ export const Experiment1 = () => {
             },
           })}
         />
+        <Heading>Metrics </Heading>
+        <Table data={aggregateMetrics(root, 1)} columns={columns} />
       </div>);
-    })
-  }</Container>
+    })}
+  </Container>
   );
 };
 
@@ -132,7 +186,7 @@ export const Experiment2 = () => {
   const count = 100;
   const xs = range(count);
   const distribution = pdfs.zipf();
-  const data = xs.map(distribution);
+  const data = normalize(xs.map(distribution));
   const color = colorScale(data, 'log');
   const id = 'Experiment 2';
   const tilingName = 'Squarify';
@@ -145,6 +199,7 @@ export const Experiment2 = () => {
   });
   const aspectRatios = root.children.map(aspectRatio).sort((a, b) => b - a);
   const arColor = colorScale(aspectRatios, 'log');
+  const multimodalApprox = xs.map(pdfs.uniformRegularMultimodal({ count: 100, modes: [d3.mean(aspectRatios.slice(0, 50)), d3.mean(aspectRatios.slice(50))] }));
   const layout = {
     font,
     height,
@@ -157,15 +212,15 @@ export const Experiment2 = () => {
     },
   };
 
-  test(root, ratio);
+
   return (<Container>
     <Title>Experiment 2</Title>
     <Heading>Distribution: Normal (variance: {count / 4}, mean: {count / 2})</Heading>
     <Chart
-      data={[{ x: xs, y: data, type: 'bar', marker: { color: data.map(color) } }]}
+      data={[{ x: xs, y: data.map(n => n * 100), type: 'bar', marker: { color: data.map(color) } }]}
       layout={layout}
     />
-    <Heading> {tilingName} treemap of {id} distribution, aspect ratio {ratio}:1 </Heading>
+    <Heading> {tilingName} treemap of {id} distribution, aspect ratio {ratio}:1, target {ratio}:1 </Heading>
 
     <Treemap
       className={`${tilingName}-${id}`}
@@ -187,18 +242,35 @@ export const Experiment2 = () => {
           title: 'Aspect Ratio',
         },
         xaxis: {
-          title: 'Lowest to highest value',
+          title: 'Descending by value',
         },
       })}
     />
+    <Heading>Bimodal distribution for comparizon </Heading>
+    <Sub>(Modes are the mean values of the 50 first and last elements)</Sub>
+    <Chart
+      data={[{ x: xs, y: multimodalApprox, type: 'bar', marker: { color: multimodalApprox.map(arColor) } }]}
+      layout={Object.assign({}, layout, {
+        yaxis: {
+          type: 'linear',
+          title: 'Aspect Ratio',
+          range: [0, 3],
+        },
+        xaxis: {
+          title: 'Descending by value',
+        },
+      })}
+    />
+    <Heading>Metrics </Heading>
+    <Table data={aggregateMetrics(root, ratio)} columns={columns} />
   </Container>
   );
 };
 
 const allExperiments = () => (<Body>
-  <Experiment1 />
+   <Experiment1 />
   <Experiment2 />
-  {/* <Experiment3 />*/}
+   {/*<Experiment3 />*/}
 </Body>);
 
 export default allExperiments;
