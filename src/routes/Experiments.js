@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import * as d3 from 'd3';
-import * as treemapTilings from '../economic-metaphor-treemap-tilings/index';
 import * as pdfs from '../statistical-distributions/index';
 import { range, combinations, decamelize, normalize } from '../jsutils/index';
 import { calculateTreemap } from '../utils/simpleTreemap';
@@ -11,43 +9,8 @@ import colorScale from '../utils/colorScale';
 import { font as fontFamily } from '../theme';
 import Chart from '../components/Chart';
 import Table from '../components/SimpleTable';
-
-// const count = 100;
-const tilingAlgorithms = {
-  Slice: d3.treemapSlice,
-  Dice: d3.treemapDice,
-  'Slice and Dice': d3.treemapSliceDice,
-  Binary: d3.treemapBinary,
-  Squarify: d3.treemapSquarify,
-  'Eat the Poor': treemapTilings.eatThePoor,
-  'Eat the Rich': treemapTilings.eatTheRich,
-  Welfare: treemapTilings.welfare,
-  Subsidy: treemapTilings.subsidy,
-};
-
-const columns = [{
-  Header: 'Parameters',
-  columns: [{
-    Header: 'Aggregate',
-    id: 'aggregate',
-    accessor: n => decamelize(n.aggregate),
-  }, {
-    Header: 'Metric',
-    id: 'metric',
-    accessor: n => n.metric.includes('oaar') ? n.metric.toUpperCase() : decamelize(n.metric),
-  }],
-}, {
-  Header: 'Value',
-  columns: [{
-    Header: 'Ideal',
-    id: 'ideal',
-    accessor: n => n.ideal.toPrecision(3)
-  },{
-    Header: 'Value',
-    id: 'value',
-    accessor: n => n.value.toPrecision(3)
-  }] },
-];
+import tilingAlgorithms from '../utils/tilingsIndex';
+import {aggregateMetrics, metricCols} from '../utils/columns';
 
 const Body = styled.main`
   flex-grow: 1;
@@ -67,26 +30,6 @@ const height = 600;
 
 const toLatex = rows => `${rows.map(row => row.join(' & ')).join(' \\\\\n')}`;
 
-function aggregateMetrics(root, ratio) {
-  const metrics = { aspectRatio, oaar, foaar, offsetFactor, offsetQuotient };
-  const aggregates = { mean, weightedMean };
-  const formatNumber = n => n === undefined ? 'undefined' : n.toPrecision(2);
-
-  const rows = combinations([Object.keys(aggregates), Object.keys(metrics)])
-    .map(([aggregate, metric]) => ({
-      aggregate,
-      metric,
-      ideal: metric.includes('offset') ? 1
-      : metric === 'foaar' ? 1 / ratio : ratio,
-      value: aggregates[aggregate](
-          root.children,
-          n => metrics[metric](n, ratio),
-          n => n.value,
-        ),
-    }));
-
-  return rows;
-}
 function thesisTable(root, ratio) {
   const metrics = { aspectRatio, oaar, foaar, offsetFactor, offsetQuotient };
   const aggregates = { mean, weightedMean };
@@ -175,7 +118,7 @@ export const Experiment1 = () => {
           })}
         />
         <Heading>Metrics </Heading>
-        <Table data={aggregateMetrics(root, 1)} columns={columns} />
+        <Table data={aggregateMetrics(root, 1)} columns={metricCols} />
       </div>);
     })}
   </Container>
@@ -199,7 +142,7 @@ export const Experiment2 = () => {
   });
   const aspectRatios = root.children.map(aspectRatio).sort((a, b) => b - a);
   const arColor = colorScale(aspectRatios, 'log');
-  const multimodalApprox = xs.map(pdfs.uniformRegularMultimodal({ count: 100, modes: [d3.mean(aspectRatios.slice(0, 50)), d3.mean(aspectRatios.slice(50))] }));
+  const multimodalApprox = xs.map(pdfs.uniformRegularMultimodal({ count: 100, modes: [mean(aspectRatios.slice(0, 50)), mean(aspectRatios.slice(50))] }));
   const layout = {
     font,
     height,
@@ -262,15 +205,16 @@ export const Experiment2 = () => {
       })}
     />
     <Heading>Metrics </Heading>
-    <Table data={aggregateMetrics(root, ratio)} columns={columns} />
+    <Table data={aggregateMetrics(root, ratio)} columns={metricCols} />
   </Container>
   );
 };
 
+
 const allExperiments = () => (<Body>
-   <Experiment1 />
+  <Experiment1 />
   <Experiment2 />
-   {/*<Experiment3 />*/}
+  {/* <Experiment3 />*/}
 </Body>);
 
 export default allExperiments;
