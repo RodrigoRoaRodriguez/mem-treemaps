@@ -206,31 +206,84 @@ export const Experiment2 = () => {
 };
 
 export const Experiment3 = () => {
+  const xs = range(50);
+  // const means = range(50);
   const means = range(50);
-  const variances = range(21).map(n => 2 ** ((n - 8) / 2));
+  // const means = range(50).map(n => n/10);
+  const expIncrement = i => (i - 4) / 2
+  const variances = range(31).map(n => 2 ** (expIncrement(n)));
+  const distroMatrix =
+  variances.map(variance => means.map(mean => pdfs.normal({ mean, variance },
+  )));
+  const treemapMatrix = distroMatrix.map(row => row.map(distro => (
+    calculateTreemap({ tile: tilingAlgorithms['Eat the Rich'].ratio(1.5), data: xs.map(x => distro(x)) })
+  )));
+  const arMatrix = treemapMatrix.map(row => row.map(treemap => (
+    // mean(treemap, foaar)
+    weightedMean(treemap, n => offsetFactor(n, 1.5))
+  )));
 
-  const expIncrements = variances.map(variance => pdfs.normal({ variance, mean: 50 }));
-
-  const x = range(30).map(n => n + 35);
+  // console.log('arMatrix', arMatrix);
+  const varIncrements = variances.map(variance => pdfs.normal({ variance, mean: 25 }));
+  const meanIncrements = means.map(mean => pdfs.normal({ mean, variance: 25 }));
+  let test = range(11).map(n => [n * .1, colorScale(range(11), 'linear')(n)])
+  console.log('color', JSON.stringify(test, null, 2));
   return (<Container>
-    <Heading>Normal distribution with exponential variance increments (μ = 50) </Heading>
+    <Heading>Normal distribution with exponential variance increments (μ = 25) </Heading>
     <Chart
-        data={expIncrements.map((pdf, i) => ({
-          type: 'line',
-          name: `𝜎 = 2^${  (i-8)/2}`,
-          x,
-          y: percentalize(x.map(n => pdf(n))),
-        }))}
-      layout={{ yaxis: { ticksuffix: '%', title: 'Portion of total density' }}}
-      />
+      data={varIncrements.map((pdf, i) => ({
+        type: 'line',
+        name: `𝜎 = 2^${expIncrement(i)}`,
+        x: xs,
+        y: percentalize(xs.map(n => pdf(n))),
+      }))}
+      layout={{
+        yaxis: { ticksuffix: '%', title: 'Portion of total density' },
+      }}
+    />
+    <Heading>Normal distribution with linear mean increments (𝜎² = 25) </Heading>
+    <Chart
+      data={meanIncrements.map((pdf, i) => ({
+        type: 'line',
+        name: `μ = ${i}`,
+        x: xs,
+        y: percentalize(xs.map(n => pdf(n))),
+      }))}
+      layout={{
+        yaxis: { ticksuffix: '%', title: 'Portion of total density' },
+      }}
+    />
+    <Heading>
+      Comparizon of Squarify and the Macro-Economic Metaphor algorithms
+      </Heading>
+    <Chart
+      data={[{
+        type: 'contour',
+        x: means,
+        y: variances,
+        z: arMatrix,
+        zmin: 1,
+        zmax: 3,
+        colorscale: test,
+      }]}
+      layout={{
+        height: 900,
+        yaxis: {
+          mirror: true,
+          tickvals: variances,
+          ticktext: variances.map((_, i) => `2^${expIncrement(i)}`),
+          type: 'log',
+          title: 'Variance' },
+      }}
+    />
   </Container>
   );
 };
 
 
 const allExperiments = () => (<Body>
-  {/* <Experiment1 />
-  <Experiment2 />*/}
+  {/* <Experiment1 />*/}
+  {/* <Experiment2 />*/}
   <Experiment3 />
 </Body>);
 

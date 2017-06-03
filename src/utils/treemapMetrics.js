@@ -15,10 +15,10 @@
  export const metrics = { aspectRatio, oaar, foaar, offsetFactor, offsetQuotient };
 
 // Aggregates
- export const mean = (array, valueFn) => d3.mean(array, valueFn);
+ export const mean = (root, valueFn) => d3.mean(root.children.filter(n => n.value > 0.001), valueFn);
 
- export const weightedMean = (array, valueFn = id => id, weightFn = id => id) =>
-  d3.sum(array, n => valueFn(n) * weightFn(n)) / d3.sum(array, weightFn);
+ export const weightedMean = (root, valueFn = id => id) =>
+   d3.sum(root.children.filter(n => n.value > 0.001), n => valueFn(n) * n.value) / root.value;
 
  export const geometricMean = (array, valueFn = id => id) =>
   array.map(valueFn).reduce((prev, next) => prev * next, 1) ** (1 / array.length);

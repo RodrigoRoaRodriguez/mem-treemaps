@@ -1,6 +1,6 @@
 import { decamelize } from '../jsutils/index';
-import { aspectRatio, oaar, foaar, offsetFactor, offsetQuotient, mean, weightedMean } from '../utils/treemapMetrics';
-import { combinations } from '../jsutils/index';
+import { aspectRatio, oaar, foaar, offsetFactor, offsetQuotient } from '../utils/treemapMetrics';
+import { combinations, mean, weightedMean } from '../jsutils/index';
 
 export function aggregateMetrics(root, ratio) {
   const metrics = { aspectRatio, oaar, foaar, offsetFactor, offsetQuotient };
