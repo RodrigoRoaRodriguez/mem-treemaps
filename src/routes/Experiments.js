@@ -216,17 +216,6 @@ export const Experiment3 = () => {
   const distroMatrix =
   variances.map(variance => means.map(mean => pdfs.normal({ mean, variance },
   )));
-  const treemapMatrix = distroMatrix.map(row => row.map(distro => (
-    calculateTreemap({ tile: tilingAlgorithms['Squarify'].ratio(1.5), data: xs.map(x => distro(x)) })
-  )));
-  const arMatrix = treemapMatrix.map(row => row.map(treemap => (
-    // mean(treemap, foaar)
-    1/rootWeightedMean(treemap, n => offsetQuotient(n, 1.5))
-  )));
-  const orientationMatrix = treemapMatrix.map(row => row.map(treemap => (
-    // mean(treemap, foaar)
-    weightedMean(treemap.children, orientation, n => n.value)
-  )));
 
   // console.log('arMatrix', arMatrix);
   const varIncrements = variances.map(variance => pdfs.normal({ variance, mean: 25 }));
@@ -244,6 +233,7 @@ export const Experiment3 = () => {
         y: percentalize(xs.map(n => pdf(n))),
       }))}
       layout={{
+        margin: { t: 6 },
         yaxis: { ticksuffix: '%', title: 'Portion of total density' },
       }}
     />
@@ -256,63 +246,95 @@ export const Experiment3 = () => {
         y: percentalize(xs.map(n => pdf(n))),
       }))}
       layout={{
+        margin: { t: 6 },
         yaxis: { ticksuffix: '%', title: 'Portion of total density' },
       }}
     />
-    <Heading>
+    <Title>
       Comparizon of Squarify and the Macro-Economic Metaphor algorithms
-      </Heading>
+      </Title>
+    {[
+      'Squarify',
+      'Eat the Poor',
+      'Eat the Rich',
+      'Subsidy',
+      'Welfare',
+    ].map(tilingName => {
+      const treemapMatrix = distroMatrix.map(row => row.map(distro => (
+        calculateTreemap({ tile: tilingAlgorithms['Eat the Rich'].ratio(1.5), data: xs.map(x => distro(x)) })
+      )));
+      const arMatrix = treemapMatrix.map(row => row.map(treemap => (
+        // mean(treemap, foaar)
+        1 / rootWeightedMean(treemap, n => offsetQuotient(n, 1.5))
+      )));
+      const orientationMatrix = treemapMatrix.map(row => row.map(treemap => (
+        // mean(treemap, foaar)
+        weightedMean(treemap.children, orientation, n => n.value)
+      )));
 
-    <Chart
-      data={[{
-        type: 'contour',
-        x: means,
-        y: variances,
-        z: arMatrix,
-        zmin: 1,
-        zmax: 2,
-        colorscale: contourColorScale,
-      }]}
-      layout={{
-        height: 900,
-        yaxis: {
-          mirror: true,
-          tickvals: variances,
-          ticktext: variances.map((_, i) => `2^${expIncrement(i)}`),
-          type: 'log',
-          title: 'Variance' },
-      }}
-    />
-    <Chart
-      data={[{
-        type: 'contour',
-        x: means,
-        y: variances,
-        z: orientationMatrix,
-        zmin: 0,
-        zmax: 1,
-        colorscale: contourColorScale,
-        reversescale: true,
-      }]}
-      layout={{
-        height: 900,
-        yaxis: {
-          mirror: true,
-          tickvals: variances,
-          ticktext: variances.map((_, i) => `2^${expIncrement(i)}`),
-          type: 'log',
-          title: 'Variance'
-        },
-      }}
-    />
+      return <div key={tilingName}>
+        <Heading>{tilingName}</Heading>
+        <Sub>Weighted mean of inverse offset quotient for aspect ratio</Sub>
+        <Chart
+          data={[{
+            type: 'contour',
+            x: means,
+            y: variances,
+            z: arMatrix,
+            zmin: 1,
+            zmax: 2,
+            colorscale: contourColorScale,
+          }]}
+          layout={{
+            height: 900,
+            margin: { t: 6 },
+            yaxis: {
+              mirror: true,
+              tickvals: variances,
+              ticktext: variances.map((_, i) => `2^${expIncrement(i)}`),
+              type: 'log',
+              title: 'Variance',
+            },
+          }}
+        />
+        <Sub>Weighted mean of orientation</Sub>
+        <Chart
+          data={[{
+            type: 'contour',
+            x: means,
+            y: variances,
+            z: orientationMatrix,
+            zmin: 0,
+            zmax: 1,
+            colorscale: contourColorScale,
+            reversescale: true,
+          }]}
+          layout={{
+            height: 900,
+            margin: { t:6 },
+            yaxis: {
+              mirror: true,
+              tickvals: variances,
+              ticktext: variances.map((_, i) => `2^${expIncrement(i)}`),
+              type: 'log',
+              title: 'Variance'
+            },
+          }}
+        />
+      </div>
+
+
+      })
+    }
+
   </Container>
   );
 };
 
 
 const allExperiments = () => (<Body>
-   {/*<Experiment1 />*/}
-   {/*<Experiment2 />*/}
+   <Experiment1 />
+   <Experiment2 />
   <Experiment3 />
 </Body>);
 

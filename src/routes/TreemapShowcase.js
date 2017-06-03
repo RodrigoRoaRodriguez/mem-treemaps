@@ -52,7 +52,6 @@ const distributions = [
   'normal',
 ];
 
-console.log('combinations', combinations([algorithms, distributions]));
 
 function formatData([distro, tilingName], ratio = PHI) {
   const distribution = pdfs[distro](distroArgs[distro]);
