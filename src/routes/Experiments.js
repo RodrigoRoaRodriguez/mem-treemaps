@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import * as pdfs from '../statistical-distributions/index';
-import { range, combinations, decamelize, normalize, percentalize } from '../jsutils/index';
+import { range, combinations, decamelize, normalize, percentalize, mean, weightedMean } from '../jsutils/index';
 import { calculateTreemap } from '../utils/simpleTreemap';
-import { aspectRatio, oaar, foaar, offsetFactor, offsetQuotient, mean, weightedMean } from '../utils/treemapMetrics';
+import { aspectRatio, oaar, foaar, offsetFactor, offsetQuotient, mean as rootMean, weightedMean as rootWeightedMean } from '../utils/treemapMetrics';
 import Treemap from '../components/Treemap';
 import colorScale from '../utils/colorScale';
 import { font as fontFamily } from '../theme';
@@ -220,7 +220,7 @@ export const Experiment3 = () => {
   )));
   const arMatrix = treemapMatrix.map(row => row.map(treemap => (
     // mean(treemap, foaar)
-    weightedMean(treemap, n => offsetFactor(n, 1.5))
+    rootWeightedMean(treemap, n => offsetFactor(n, 1.5))
   )));
 
   // console.log('arMatrix', arMatrix);
@@ -282,8 +282,8 @@ export const Experiment3 = () => {
 
 
 const allExperiments = () => (<Body>
-  {/* <Experiment1 />*/}
-  {/* <Experiment2 />*/}
+   <Experiment1 />
+   <Experiment2 />
   <Experiment3 />
 </Body>);
 
