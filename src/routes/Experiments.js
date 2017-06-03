@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import * as pdfs from '../statistical-distributions/index';
 import { range, combinations, decamelize, normalize, percentalize, mean, weightedMean } from '../jsutils/index';
 import { calculateTreemap } from '../utils/simpleTreemap';
-import { aspectRatio, oaar, foaar, offsetFactor, offsetQuotient, mean as rootMean, weightedMean as rootWeightedMean } from '../utils/treemapMetrics';
+import { aspectRatio, oaar, foaar, offsetFactor, offsetQuotient, orientation, weightedMean as rootWeightedMean } from '../utils/treemapMetrics';
 import Treemap from '../components/Treemap';
 import colorScale from '../utils/colorScale';
 import { font as fontFamily } from '../theme';
@@ -223,6 +223,10 @@ export const Experiment3 = () => {
     // mean(treemap, foaar)
     1/rootWeightedMean(treemap, n => offsetQuotient(n, 1.5))
   )));
+  const orientationMatrix = treemapMatrix.map(row => row.map(treemap => (
+    // mean(treemap, foaar)
+    weightedMean(treemap.children, orientation, n => n.value)
+  )));
 
   // console.log('arMatrix', arMatrix);
   const varIncrements = variances.map(variance => pdfs.normal({ variance, mean: 25 }));
@@ -230,6 +234,7 @@ export const Experiment3 = () => {
   let steps = 8;
 
   return (<Container>
+    <Title>Distribution Matrix</Title>
     <Heading>Normal distribution with exponential variance increments (μ = 25) </Heading>
     <Chart
       data={varIncrements.map((pdf, i) => ({
@@ -257,6 +262,7 @@ export const Experiment3 = () => {
     <Heading>
       Comparizon of Squarify and the Macro-Economic Metaphor algorithms
       </Heading>
+
     <Chart
       data={[{
         type: 'contour',
@@ -275,6 +281,28 @@ export const Experiment3 = () => {
           ticktext: variances.map((_, i) => `2^${expIncrement(i)}`),
           type: 'log',
           title: 'Variance' },
+      }}
+    />
+    <Chart
+      data={[{
+        type: 'contour',
+        x: means,
+        y: variances,
+        z: orientationMatrix,
+        zmin: 0,
+        zmax: 1,
+        colorscale: contourColorScale,
+        reversescale: true,
+      }]}
+      layout={{
+        height: 900,
+        yaxis: {
+          mirror: true,
+          tickvals: variances,
+          ticktext: variances.map((_, i) => `2^${expIncrement(i)}`),
+          type: 'log',
+          title: 'Variance'
+        },
       }}
     />
   </Container>

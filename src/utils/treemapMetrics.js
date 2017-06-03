@@ -2,6 +2,7 @@
 
 // Metrics
  export const aspectRatio = n => (n.x1 - n.x0) / (n.y1 - n.y0);
+ export const orientation = n => aspectRatio(n) < 1 ? 0 : 1;
  export const area = n => (n.x1 - n.x0) * (n.y1 - n.y0);
  export const oaar = n =>
  Math.max((n.x1 - n.x0) / (n.y1 - n.y0), (n.y1 - n.y0) / (n.x1 - n.x0));
