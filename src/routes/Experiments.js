@@ -11,6 +11,7 @@ import Chart from '../components/Chart';
 import Table from '../components/SimpleTable';
 import tilingAlgorithms from '../utils/tilingsIndex';
 import { aggregateMetrics, metricCols } from '../utils/columns';
+import contourColorScale from '../utils/contourColorScale.json';
 import * as d3 from 'd3';
 
 
@@ -216,18 +217,18 @@ export const Experiment3 = () => {
   variances.map(variance => means.map(mean => pdfs.normal({ mean, variance },
   )));
   const treemapMatrix = distroMatrix.map(row => row.map(distro => (
-    calculateTreemap({ tile: tilingAlgorithms['Eat the Rich'].ratio(1.5), data: xs.map(x => distro(x)) })
+    calculateTreemap({ tile: tilingAlgorithms['Squarify'].ratio(1.5), data: xs.map(x => distro(x)) })
   )));
   const arMatrix = treemapMatrix.map(row => row.map(treemap => (
     // mean(treemap, foaar)
-    rootWeightedMean(treemap, n => offsetFactor(n, 1.5))
+    1/rootWeightedMean(treemap, n => offsetQuotient(n, 1.5))
   )));
 
   // console.log('arMatrix', arMatrix);
   const varIncrements = variances.map(variance => pdfs.normal({ variance, mean: 25 }));
   const meanIncrements = means.map(mean => pdfs.normal({ mean, variance: 25 }));
-  let test = range(11).map(n => [n * .1, colorScale(range(11), 'linear')(n)])
-  console.log('color', JSON.stringify(test, null, 2));
+  let steps = 8;
+
   return (<Container>
     <Heading>Normal distribution with exponential variance increments (μ = 25) </Heading>
     <Chart
@@ -263,8 +264,8 @@ export const Experiment3 = () => {
         y: variances,
         z: arMatrix,
         zmin: 1,
-        zmax: 3,
-        colorscale: test,
+        zmax: 2,
+        colorscale: contourColorScale,
       }]}
       layout={{
         height: 900,
@@ -282,8 +283,8 @@ export const Experiment3 = () => {
 
 
 const allExperiments = () => (<Body>
-   <Experiment1 />
-   <Experiment2 />
+   {/*<Experiment1 />*/}
+   {/*<Experiment2 />*/}
   <Experiment3 />
 </Body>);
 
