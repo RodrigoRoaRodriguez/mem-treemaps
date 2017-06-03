@@ -6,7 +6,6 @@ export default function eatTheRich({ children, value }, x0, y0, x1, y1, ratio) {
   const height = y1 - y0;
 
   for (let end = children.length, start = 1; end >= 1; end -= start) {
-    if (!children[end - 1].value) { continue; } // Skip empty nodes.
     const width = x - x0;
 
     const alpha = width / height / remainingValue / ratio;
