@@ -39,7 +39,6 @@ export default function eatThePoor({ children, value }, x0, y0, x1, y1, ratio) {
     };
     slice(fakeNode, x, y0, nextX, y1);
     // Update values for next iteration.
-    console.log('start: ' + start, 'end: ' + end, 'children.length: ' + children.length)
     start += end;
     remainingValue -= sumValue;
     x = nextX;
