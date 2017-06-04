@@ -9,12 +9,24 @@ const Frame = styled.figure`
   margin: 1em;
   `;
 
-
-
 class Chart extends Component {
   componentDidMount() {
     const { data, layout } = this.props;
-    plotly.newPlot(this.container, data, layout);
+    plotly.newPlot(this.container, data, layout)
+    // TODO extract this code image downloading 
+    // .then(
+    //   function (gd) {
+    //     plotly.toImage(gd, { format: 'svg', height: 600, width: 400 })
+    //       .then(
+    //       function (url) {
+    //         var download = document.createElement('a');
+    //         document.body.appendChild(download); // For Firefox.
+    //         download.setAttribute('href', url);
+    //         download.setAttribute('download', (new Date()) + '.svg');
+    //         download.click();
+    //       }
+    //       )
+    //   });
   }
   componentWillUnmount(){
     plotly.purge(this.container);

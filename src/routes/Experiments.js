@@ -211,16 +211,14 @@ export const Experiment3 = () => {
   // const means = range(50);
   const means = range(50);
   // const means = range(50).map(n => n/10);
-  const expIncrement = i => (i - 4) / 2
+  const expIncrement = i => (i - 4) / 2;
   const variances = range(31).map(n => 2 ** (expIncrement(n)));
   const distroMatrix =
   variances.map(variance => means.map(mean => pdfs.normal({ mean, variance },
   )));
-
-  // console.log('arMatrix', arMatrix);
   const varIncrements = variances.map(variance => pdfs.normal({ variance, mean: 25 }));
   const meanIncrements = means.map(mean => pdfs.normal({ mean, variance: 25 }));
-  let steps = 8;
+  const steps = 8;
 
   return (<Container>
     <Title>Distribution Matrix</Title>
@@ -259,7 +257,7 @@ export const Experiment3 = () => {
       'Eat the Rich',
       'Subsidy',
       'Welfare',
-    ].map(tilingName => {
+    ].map((tilingName) => {
       const treemapMatrix = distroMatrix.map(row => row.map(distro => (
         calculateTreemap({ tile: tilingAlgorithms[tilingName].ratio(1.5), data: xs.map(x => distro(x)) })
       )));
@@ -271,60 +269,49 @@ export const Experiment3 = () => {
         // mean(treemap, foaar)
         weightedMean(treemap.children, orientation, n => n.value)
       )));
-
-      return <div key={tilingName}>
+      const tickvals = variances.filter(n => n % 2);
+      const toLatex = (_, i) => `$2^{${expIncrement(i)}}$`;
+      const toText = (_, i) => `2^${expIncrement(i)}`;
+      return (<div key={tilingName}>
         <Heading>{tilingName}</Heading>
-        <Sub>Weighted mean of inverse offset quotient for aspect ratio</Sub>
-        <Chart
-          data={[{
-            type: 'contour',
-            x: means,
-            y: variances,
-            z: arMatrix,
-            zmin: 1,
-            zmax: 2,
-            colorscale: contourColorScale,
-          }]}
-          layout={{
-            height: 900,
-            margin: { t: 6 },
-            yaxis: {
-              mirror: true,
-              tickvals: variances,
-              ticktext: variances.map((_, i) => `2^${expIncrement(i)}`),
-              type: 'log',
-              title: 'Variance',
-            },
-          }}
-        />
-        <Sub>Weighted mean of orientation</Sub>
-        <Chart
-          data={[{
-            type: 'contour',
-            x: means,
-            y: variances,
-            z: orientationMatrix,
-            zmin: 0,
-            zmax: 1,
-            colorscale: contourColorScale,
-            reversescale: true,
-          }]}
-          layout={{
-            height: 900,
-            margin: { t:6 },
-            yaxis: {
-              mirror: true,
-              tickvals: variances,
-              ticktext: variances.map((_, i) => `2^${expIncrement(i)}`),
-              type: 'log',
-              title: 'Variance'
-            },
-          }}
-        />
-      </div>
+        {
+          [
+            { sub: 'Weighted mean of inverse offset quotient for aspect ratio', z: arMatrix, zmin: 1, zmax: 2 },
+            { sub: 'Weighted mean of orientation', z: orientationMatrix, zmin: 0, zmax: 1, reversescale: true },
 
-
-      })
+          ].map(({ sub, z, zmax, zmin, reversescale }) => (<figure>
+            <Sub>Weighted mean of inverse offset quotient for aspect ratio</Sub>
+            <Chart
+              data={[{
+                type: 'contour',
+                x: means,
+                y: variances,
+                z,
+                zmin,
+                zmax,
+                reversescale,
+                colorscale: contourColorScale,
+                colorbar: { thickness: 12, xpad: 5},
+                line: { width: 0 },
+              }]}
+              layout={{
+                height: 900,
+                margin: { t: 6 },
+                xaxis: { title: 'Mean' },
+                yaxis: {
+                  mirror: true,
+                  tickvals,
+                  ticktext: tickvals.map(toText),
+                  type: 'log',
+                  title: 'Variance',
+                },
+              }}
+            />
+          </figure>),
+          )
+        }
+      </div>);
+    })
     }
 
   </Container>
@@ -333,8 +320,8 @@ export const Experiment3 = () => {
 
 
 const allExperiments = () => (<Body>
-   <Experiment1 />
-   <Experiment2 />
+  <Experiment1 />
+  <Experiment2 />
   <Experiment3 />
 </Body>);
 

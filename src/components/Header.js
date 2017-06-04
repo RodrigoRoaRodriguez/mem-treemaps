@@ -75,7 +75,7 @@ const Logo = styled.img`
 
 const Space = styled.div`flex:8;`;
 
-const COLORS = ['#e91e63', '#ffc107', '#4caf50', '#2196f3'];
+const COLORS = ['#e91e63', '#ffc107', '#4caf50', '#2196f3', '#673ab7'];
 
 const Header = ({ routes }) => (
   <Navigation>
