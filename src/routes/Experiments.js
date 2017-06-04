@@ -261,7 +261,7 @@ export const Experiment3 = () => {
       'Welfare',
     ].map(tilingName => {
       const treemapMatrix = distroMatrix.map(row => row.map(distro => (
-        calculateTreemap({ tile: tilingAlgorithms['Eat the Rich'].ratio(1.5), data: xs.map(x => distro(x)) })
+        calculateTreemap({ tile: tilingAlgorithms[tilingName].ratio(1.5), data: xs.map(x => distro(x)) })
       )));
       const arMatrix = treemapMatrix.map(row => row.map(treemap => (
         // mean(treemap, foaar)
