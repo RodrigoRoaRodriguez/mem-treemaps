@@ -1,7 +1,7 @@
 {
   "name": "statistical-distributions",
   "version": "0.1.0",
-  "homepage": "https://github.com/RodrigoRoaRodriguez/economic-metaphor-treemap-tilings",
+  "homepage": "https://rodrigoroarodriguez.github.io/conomic-metaphor-treemap-tilings",
   "private": true,
   "dependencies": {
     "d3": "^4.9.1",
