@@ -24,15 +24,15 @@ const Body = styled.main`
 `;
 
 const Row = styled.section`
-  flex-grow: 1;
+  flex: 1 0 100%;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
 `;
 
 const Col = styled.figure`
-  flex: 1 0 40%;
-`
+  flex: 1 0 ${({ width = '40%' }) => width};
+`;
 
 const Container = styled.main`
   text-align: center;
@@ -173,28 +173,33 @@ export const Experiment2 = () => {
 
   return (<Container>
     <Title>Experiment 2</Title>
+<Row>
+  <Col>
     <Heading>Distribution: Normal (variance: {count / 4}, mean: {count / 2})</Heading>
     <Chart
-      data={[{ x: xs, y: data.map(n => n * 100), type: 'bar', marker: { color: data.map(color) } }]}
-      layout={layout}
+    data={[{ x: xs, y: data.map(n => n * 100), type: 'bar', marker: { color: data.map(color) } }]}
+    layout={layout}
+  />
+  </Col>
+<Col>
+<Heading> {tilingName} treemap of {id} distribution, aspect ratio {ratio}:1, target {ratio}:1 </Heading>
+    
+  <Treemap
+  className={`${tilingName}-${id}`}
+  height="60vh"
+  ratio={ratio}
+  granularity={100}
+  treemapArgs={{
+    data,
+    scale: 'log',
+    root,
+  }}
     />
-    <Heading> {tilingName} treemap of {id} distribution, aspect ratio {ratio}:1, target {ratio}:1 </Heading>
+    </Col>
 
-    <Treemap
-      className={`${tilingName}-${id}`}
-      height="60vh"
-      ratio={ratio}
-      granularity={100}
-      treemapArgs={{
-        data,
-        scale: 'log',
-        root,
-      }}
-    />
-
-    <Row>
       <Col>
         <Heading>Aspect ratio distribution</Heading>
+        <Sub><br /></Sub>
         <Chart
           data={[{ x: xs, y: aspectRatios, type: 'bar', marker: { color: aspectRatios.map(arColor) } }]}
           layout={Object.assign({}, layout, {
@@ -205,7 +210,7 @@ export const Experiment2 = () => {
 
           })}
         />
-        </Col>
+      </Col>
       <Col>
         <Heading>Bimodal distribution for comparizon </Heading>
         <Sub>(Modes are the mean values of the 50 first and last elements)</Sub>
@@ -222,9 +227,9 @@ export const Experiment2 = () => {
             },
           })}
         />
-        </Col>
+      </Col>
     </Row>
-      <Heading>Metrics </Heading>
+    <Heading>Metrics </Heading>
     <Table data={aggregateMetrics(root, ratio)} columns={metricCols} />
   </Container>
   );
