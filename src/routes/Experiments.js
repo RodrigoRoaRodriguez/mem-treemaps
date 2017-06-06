@@ -15,18 +15,34 @@ import contourColorScale from '../utils/contourColorScale.json';
 import * as d3 from 'd3';
 
 
+const Title = styled.h1`margin: 4em 0 .5em 0;`;
+const Heading = styled.h2`margin: 4em 0 .5em 0; color: #888;`;
+const Sub = styled.h3`margin-bottom: .5em; color: #AAA;`;
 const Body = styled.main`
   flex-grow: 1;
   margin: 0 10vw;
   *:first-child{ margin-top: 2em; }
 `;
-const Container = styled.figure`
-  *:first-child{ margin-top: 0em; }
-  & > h1+h2 { margin-top: 0em; }
+
+const Row = styled.figure`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
 `;
-const Title = styled.h1`margin: 4em 0 .5em 0;`;
-const Heading = styled.h2`margin: 3em 0 .5em 0; color: #888;`;
-const Sub = styled.h3`margin-bottom: .5em; color: #AAA;`;
+
+const Container = styled.figure`
+  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  *:first-child{ margin-top: 0em; }
+  & > h1+h2 { margin-top: 1em; }
+  & h1,h2 {flex-basis:100%;}
+`;
+
+const pairElement = styled.article`
+  flex: 
+`;
 
 const font = { family: fontFamily.heading, size: 16 };
 const height = 600;
@@ -57,6 +73,7 @@ export const Experiment1 = () => {
   const count = 20;
   const xs = range(count);
   const distribution = pdfs.normal({ variance: count / 4, mean: count / 2 });
+  // const distribution = pdfs.normal({ variance: count / 4, mean: count / 2 });
   const data = xs.map(distribution);
   const color = colorScale(data, 'linear');
   const id = 'Experiment 1';
@@ -222,32 +239,26 @@ export const Experiment3 = () => {
 
   return (<Container>
     <Title>Distribution Matrix</Title>
-    <Heading>Normal distribution with exponential variance increments (μ = 25) </Heading>
-    <Chart
-      data={varIncrements.map((pdf, i) => ({
-        type: 'line',
-        name: `𝜎 = 2^${expIncrement(i)}`,
-        x: xs,
-        y: percentalize(xs.map(n => pdf(n))),
-      }))}
-      layout={{
-        margin: { t: 6 },
-        yaxis: { ticksuffix: '%', title: 'Portion of total density' },
-      }}
-    />
-    <Heading>Normal distribution with linear mean increments (𝜎² = 25) </Heading>
-    <Chart
-      data={meanIncrements.map((pdf, i) => ({
-        type: 'line',
-        name: `μ = ${i}`,
-        x: xs,
-        y: percentalize(xs.map(n => pdf(n))),
-      }))}
-      layout={{
-        margin: { t: 6 },
-        yaxis: { ticksuffix: '%', title: 'Portion of total density' },
-      }}
-    />
+    {[
+      { title: 'Normal distribution with exponential variance increments (Fixed μ = 25)', getName: i => `𝜎² = 2^${expIncrement(i)}`, dataset: varIncrements },
+      {
+        title: 'Normal distribution with linear mean increments (Fixed 𝜎² = 25)', getName: i => `μ = ${i}`, dataset: meanIncrements },
+    ].map(({ title, getName, dataset }) => (<div>
+        <Heading> {title} </Heading>
+        <Chart
+          data={dataset.map((pdf, i) => ({
+            type: 'line',
+            name: getName(i),
+            x: xs,
+            y: percentalize(xs.map(n => pdf(n))),
+          }))}
+          layout={{
+            margin: { t: 6 },
+            yaxis: { ticksuffix: '%', title: 'Portion of total density' },
+          }}
+        />
+      </div>))
+    }
     <Title>
       Comparizon of Squarify and the Macro-Economic Metaphor algorithms
       </Title>
@@ -272,13 +283,12 @@ export const Experiment3 = () => {
       const tickvals = variances.filter(n => n % 2);
       const toLatex = (_, i) => `$2^{${expIncrement(i)}}$`;
       const toText = (_, i) => `2^${expIncrement(i)}`;
-      return (<div key={tilingName}>
+      return (<Row key={tilingName}>
         <Heading>{tilingName}</Heading>
         {
           [
             { sub: 'Weighted mean of inverse offset quotient for aspect ratio', z: arMatrix, zmin: 1, zmax: 2 },
             { sub: 'Weighted mean of orientation', z: orientationMatrix, zmin: 0, zmax: 1, reversescale: true },
-
           ].map(({ sub, z, zmax, zmin, reversescale }) => (<figure>
             <Sub>Weighted mean of inverse offset quotient for aspect ratio</Sub>
             <Chart
@@ -291,11 +301,12 @@ export const Experiment3 = () => {
                 zmax,
                 reversescale,
                 colorscale: contourColorScale,
-                colorbar: { thickness: 12, xpad: 5},
+                colorbar: { thickness: 12, xpad: 5 },
                 line: { width: 0 },
               }]}
               layout={{
-                height: 900,
+                height: 750,
+                width: 500,
                 margin: { t: 6 },
                 xaxis: { title: 'Mean' },
                 yaxis: {
@@ -310,7 +321,7 @@ export const Experiment3 = () => {
           </figure>),
           )
         }
-      </div>);
+      </Row>);
     })
     }
 
