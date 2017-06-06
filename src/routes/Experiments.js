@@ -228,8 +228,8 @@ export const Experiment3 = () => {
   // const means = range(50);
   const means = range(50);
   // const means = range(50).map(n => n/10);
-  const expIncrement = i => (i - 4) / 2;
-  const variances = range(31).map(n => 2 ** (expIncrement(n)));
+  const expIncrement = i => (i - 8) / 4;
+  const variances = range(51).map(n => 2 ** (expIncrement(n)));
   const distroMatrix =
   variances.map(variance => means.map(mean => pdfs.normal({ mean, variance },
   )));
@@ -273,16 +273,12 @@ export const Experiment3 = () => {
         calculateTreemap({ tile: tilingAlgorithms[tilingName].ratio(1.5), data: xs.map(x => distro(x)) })
       )));
       const arMatrix = treemapMatrix.map(row => row.map(treemap => (
-        // mean(treemap, foaar)
         1 / rootWeightedMean(treemap, n => offsetQuotient(n, 1.5))
       )));
       const orientationMatrix = treemapMatrix.map(row => row.map(treemap => (
-        // mean(treemap, foaar)
         weightedMean(treemap.children, orientation, n => n.value)
       )));
-      const tickvals = variances.filter(n => n % 2);
-      const toLatex = (_, i) => `$2^{${expIncrement(i)}}$`;
-      const toText = (_, i) => `2^${expIncrement(i)}`;
+      const tickvals = variances.filter((_,i) => !(i%4));
       return (<Row key={tilingName}>
         <Heading>{tilingName}</Heading>
         {
@@ -312,7 +308,7 @@ export const Experiment3 = () => {
                 yaxis: {
                   mirror: true,
                   tickvals,
-                  ticktext: tickvals.map(toText),
+                  ticktext: tickvals,
                   type: 'log',
                   title: 'Variance',
                 },
