@@ -21,27 +21,27 @@ const Sub = styled.h3`margin-bottom: .5em; color: #AAA;`;
 const Body = styled.main`
   flex-grow: 1;
   margin: 0 10vw;
-  *:first-child{ margin-top: 2em; }
 `;
 
-const Row = styled.figure`
+const Row = styled.section`
+  flex-grow: 1;
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-around;
+  justify-content: center;
 `;
 
-const Container = styled.figure`
+const Col = styled.figure`
+  flex: 1 0 40%;
+`
+
+const Container = styled.main`
   text-align: center;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
-  *:first-child{ margin-top: 0em; }
+  & > :first-child{ margin-top: 2em; }
   & > h1+h2 { margin-top: 1em; }
   & h1,h2 {flex-basis:100%;}
-`;
-
-const pairElement = styled.article`
-  flex: 
 `;
 
 const font = { family: fontFamily.heading, size: 16 };
@@ -110,7 +110,7 @@ export const Experiment1 = () => {
       const aspectRatios = root.children.map(aspectRatio);
       const arColor = colorScale(aspectRatios, 'log');
 
-      return (<div key={tilingName + id}>
+      return (<Col key={tilingName + id}>
         <Heading> {tilingName} treemap of {id} distribution, aspect ratio {RATIO}:1 </Heading>
 
         <Treemap
@@ -139,7 +139,7 @@ export const Experiment1 = () => {
         />
         <Heading>Metrics </Heading>
         <Table data={aggregateMetrics(root, 1)} columns={metricCols} />
-      </div>);
+      </Col>);
     })}
   </Container>
   );
@@ -191,33 +191,40 @@ export const Experiment2 = () => {
         root,
       }}
     />
-    <Heading>Aspect ratio distribution</Heading>
-    <Chart
-      data={[{ x: xs, y: aspectRatios, type: 'bar', marker: { color: aspectRatios.map(arColor) } }]}
-      layout={Object.assign({}, layout, {
-        yaxis: {
-          type: 'linear',
-          title: 'Aspect Ratio',
-        },
 
-      })}
-    />
-    <Heading>Bimodal distribution for comparizon </Heading>
-    <Sub>(Modes are the mean values of the 50 first and last elements)</Sub>
-    <Chart
-      data={[{ x: xs, y: multimodalApprox, type: 'bar', marker: { color: multimodalApprox.map(arColor) } }]}
-      layout={Object.assign({}, layout, {
-        yaxis: {
-          type: 'linear',
-          title: 'Aspect Ratio',
-          range: [0, 3],
-        },
-        xaxis: {
-          title: 'Descending by value',
-        },
-      })}
-    />
-    <Heading>Metrics </Heading>
+    <Row>
+      <Col>
+        <Heading>Aspect ratio distribution</Heading>
+        <Chart
+          data={[{ x: xs, y: aspectRatios, type: 'bar', marker: { color: aspectRatios.map(arColor) } }]}
+          layout={Object.assign({}, layout, {
+            yaxis: {
+              type: 'linear',
+              title: 'Aspect Ratio',
+            },
+
+          })}
+        />
+        </Col>
+      <Col>
+        <Heading>Bimodal distribution for comparizon </Heading>
+        <Sub>(Modes are the mean values of the 50 first and last elements)</Sub>
+        <Chart
+          data={[{ x: xs, y: multimodalApprox, type: 'bar', marker: { color: multimodalApprox.map(arColor) } }]}
+          layout={Object.assign({}, layout, {
+            yaxis: {
+              type: 'linear',
+              title: 'Aspect Ratio',
+              range: [0, 3],
+            },
+            xaxis: {
+              title: 'Descending by value',
+            },
+          })}
+        />
+        </Col>
+    </Row>
+      <Heading>Metrics </Heading>
     <Table data={aggregateMetrics(root, ratio)} columns={metricCols} />
   </Container>
   );
@@ -243,21 +250,21 @@ export const Experiment3 = () => {
       { title: 'Normal distribution with exponential variance increments (Fixed μ = 25)', getName: i => `𝜎² = 2^${expIncrement(i)}`, dataset: varIncrements },
       {
         title: 'Normal distribution with linear mean increments (Fixed 𝜎² = 25)', getName: i => `μ = ${i}`, dataset: meanIncrements },
-    ].map(({ title, getName, dataset }) => (<div>
-        <Heading> {title} </Heading>
-        <Chart
-          data={dataset.map((pdf, i) => ({
-            type: 'line',
-            name: getName(i),
-            x: xs,
-            y: percentalize(xs.map(n => pdf(n))),
-          }))}
-          layout={{
-            margin: { t: 6 },
-            yaxis: { ticksuffix: '%', title: 'Portion of total density' },
-          }}
-        />
-      </div>))
+    ].map(({ title, getName, dataset }) => (<Col>
+      <Heading> {title} </Heading>
+      <Chart
+        data={dataset.map((pdf, i) => ({
+          type: 'line',
+          name: getName(i),
+          x: xs,
+          y: percentalize(xs.map(n => pdf(n))),
+        }))}
+        layout={{
+          margin: { t: 6 },
+          yaxis: { ticksuffix: '%', title: 'Portion of total density' },
+        }}
+      />
+    </Col>))
     }
     <Title>
       Comparizon of Squarify and the Macro-Economic Metaphor algorithms
@@ -278,7 +285,7 @@ export const Experiment3 = () => {
       const orientationMatrix = treemapMatrix.map(row => row.map(treemap => (
         weightedMean(treemap.children, orientation, n => n.value)
       )));
-      const tickvals = variances.filter((_,i) => !(i%4));
+      const tickvals = variances.filter((_, i) => !(i % 4));
       return (<Row key={tilingName}>
         <Heading>{tilingName}</Heading>
         {
