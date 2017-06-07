@@ -9,8 +9,9 @@ import { aspectRatio, oaar, foaar, offsetFactor, offsetQuotient, mean, weightedM
 import Treemap from '../components/Treemap';
 
 const PHI = (1 + Math.sqrt(5)) / 2;
-// const count = 100;
-const count = 20;
+
+// const count = 20;
+const count = 25;
 const xs = range(count);
 
 const distroArgs = {
