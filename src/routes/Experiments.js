@@ -270,7 +270,7 @@ export const Experiment3 = () => {
     </Col>))
     }
     <Title>
-      Comparizon of Squarify and the Macro-Economic Metaphor algorithms
+      Metrics for Squarify and the Macro-Economic Metaphor algorithms
       </Title>
     {[
       'Squarify',
@@ -294,6 +294,101 @@ export const Experiment3 = () => {
         {
           [
             { sub: 'Weighted mean of inverse offset quotient for aspect ratio', z: arMatrix, zmin: 1, zmax: 2 },
+            { sub: 'Weighted mean of orientation', z: orientationMatrix, zmin: 0, zmax: 1, reversescale: true },
+          ].map(({ sub, z, zmax, zmin, reversescale }) => (<figure>
+            <Sub>Weighted mean of inverse offset quotient for aspect ratio</Sub>
+            <Chart
+              data={[{
+                type: 'contour',
+                x: means,
+                y: variances,
+                z,
+                zmin,
+                zmax,
+                reversescale,
+                colorscale: contourColorScale,
+                colorbar: { thickness: 12, xpad: 5 },
+                line: { width: 0 },
+              }]}
+              layout={{
+                height: 750,
+                width: 500,
+                margin: { t: 6 },
+                xaxis: { title: 'Mean' },
+                yaxis: {
+                  mirror: true,
+                  tickvals,
+                  ticktext: tickvals,
+                  type: 'log',
+                  title: 'Variance',
+                },
+              }}
+            />
+          </figure>),
+          )
+        }
+      </Row>);
+    })
+    }
+
+  </Container>
+  );
+};
+
+export const Experiment3B = () => {
+  const xs = range(50);
+  const means = range(50);
+  const expIncrement = i => (i - 8) / 4;
+  const variances = range(51).map(n => 2 ** (expIncrement(n)));
+  const distroMatrix =
+    variances.map(variance => means.map(mean => pdfs.normal({ mean, variance },
+    )));
+
+  const squarifyMatrix = distroMatrix.map(row => row.map(distro => (
+    calculateTreemap({ tile: tilingAlgorithms.Squarify.ratio(1.5), data: xs.map(x => distro(x)) })
+  )));
+
+  const squarifyArMatrix = squarifyMatrix.map(row => row.map(treemap => (
+    1 / rootWeightedMean(treemap, n => offsetQuotient(n, 1.5))
+  )));
+
+  const squarifyOrMatrix = squarifyMatrix.map(row => row.map(treemap => (
+    weightedMean(treemap.children, orientation, n => n.value)
+  )));
+
+  return (<Container>
+    <Title>
+      Comparizon between Squarify and the Macro-Economic Metaphor algorithms
+      </Title>
+      <Sub>Countour plots are difference images between Squarify and the specified algorithm.</Sub>
+    {[
+      'Squarify',
+      'Eat the Poor',
+      'Eat the Rich',
+      'Subsidy',
+      'Welfare',
+    ].map((tilingName) => {
+      const treemapMatrix = distroMatrix.map(row => row.map(distro => (
+        calculateTreemap({ tile: tilingAlgorithms[tilingName].ratio(1.5), data: xs.map(x => distro(x)) })
+      )));
+
+      {/*const arMatrix = treemapMatrix.map(row => row.map(treemap => (
+        1 / rootWeightedMean(treemap, n => offsetQuotient(n, 1.5))
+      )));*/}
+
+      const arMatrix = treemapMatrix.map((row, y) => row.map((treemap, x) => (
+        squarifyArMatrix[y][x] - 1 / rootWeightedMean(treemap, n => offsetQuotient(n, 1.5))
+      )));
+
+      const orientationMatrix = treemapMatrix.map((row, y) => row.map((treemap, x) => (
+        weightedMean(treemap.children, orientation, n => n.value) - squarifyOrMatrix[y][x]
+      )));
+      const tickvals = variances.filter((_, i) => !(i % 4));
+      return (<Row key={tilingName}>
+        <Heading>{tilingName}</Heading>
+        {
+          [
+            { sub: 'Weighted mean of inverse offset quotient for aspect ratio', z: arMatrix, zmin: 0, zmax: 1, reversescale: true },
             { sub: 'Weighted mean of orientation', z: orientationMatrix, zmin: 0, zmax: 1, reversescale: true },
           ].map(({ sub, z, zmax, zmin, reversescale }) => (<figure>
             <Sub>Weighted mean of inverse offset quotient for aspect ratio</Sub>
