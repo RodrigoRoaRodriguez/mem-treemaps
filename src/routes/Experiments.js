@@ -20,7 +20,6 @@ const Heading = styled.h2`margin: 4em 0 .5em 0; color: #888;`;
 const Sub = styled.h3`margin-bottom: .5em; color: #AAA;`;
 const Body = styled.main`
   flex-grow: 1;
-  margin: 0 10vw;
 `;
 
 const Row = styled.section`
@@ -31,7 +30,7 @@ const Row = styled.section`
 `;
 
 const Col = styled.figure`
-  flex: 1 0 ${({ width = '40%' }) => width};
+  flex: 1 0 ${({ width = '40%' }) => width};  
 `;
 
 const Container = styled.main`
@@ -165,11 +164,10 @@ export const Experiment2 = () => {
   const multimodalApprox = xs.map(pdfs.uniformRegularMultimodal({ count: 100, modes: [mean(aspectRatios.slice(0, 50)), mean(aspectRatios.slice(50))] }));
   const layout = {
     font,
-    height,
     yaxis: { ticksuffix: '%', title: 'Portion of total density' },
     xaxis: { title: 'Index' },
+    margin: { t: 6 },
   };
-
 
   return (<Container>
     <Title>Experiment 2</Title>
@@ -178,7 +176,7 @@ export const Experiment2 = () => {
     <Heading>Distribution: Normal (variance: {count / 4}, mean: {count / 2})</Heading>
     <Chart
     data={[{ x: xs, y: data.map(n => n * 100), type: 'bar', marker: { color: data.map(color) } }]}
-    layout={layout}
+          layout={{height:height+60, ...layout} }
   />
   </Col>
 <Col>
@@ -186,7 +184,7 @@ export const Experiment2 = () => {
     
   <Treemap
   className={`${tilingName}-${id}`}
-  height="60vh"
+  height={height}
   ratio={ratio}
   granularity={100}
   treemapArgs={{
