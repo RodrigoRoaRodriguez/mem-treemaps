@@ -11,7 +11,7 @@ import Chart from '../components/Chart';
 import Table from '../components/SimpleTable';
 import tilingAlgorithms from '../utils/tilingsIndex';
 import { aggregateMetrics, metricCols } from '../utils/columns';
-import contourColorScale from '../utils/contourColorScale.json';
+import { divergent, positive, negative } from '../utils/contourColorScales';
 import * as d3 from 'd3';
 
 
@@ -233,7 +233,7 @@ export const Experiment2 = () => {
   );
 };
 
-export const Experiment3 = () => {
+export const Experiment3A = () => {
   const xs = range(50);
   // const means = range(50);
   const means = range(50);
@@ -307,7 +307,102 @@ export const Experiment3 = () => {
                 zmin,
                 zmax,
                 reversescale,
-                colorscale: contourColorScale,
+                colorscale: divergent,
+                colorbar: { thickness: 12, xpad: 5 },
+                line: { width: 0 },
+              }]}
+              layout={{
+                height: 750,
+                width: 500,
+                margin: { t: 6, l: 75, r: 0 },
+                xaxis: { title: 'Mean' },
+                yaxis: {
+                  mirror: true,
+                  tickvals,
+                  ticktext: tickvals,
+                  type: 'log',
+                  title: 'Variance',
+                },
+              }}
+            />
+          </figure>),
+          )
+        }
+      </Row>);
+    })
+    }
+
+  </Container>
+  );
+};
+
+export const Experiment3C = () => {
+  const xs = range(50);
+  const means = range(50);
+  const expIncrement = i => (i - 8) / 4;
+  const variances = range(51).map(n => 2 ** (expIncrement(n)));
+  const distroMatrix =
+    variances.map(variance => means.map(mean => pdfs.normal({ mean, variance },
+    )));
+
+  const squarifyMatrix = distroMatrix.map(row => row.map(distro => (
+    calculateTreemap({ tile: tilingAlgorithms.Squarify.ratio(1.5), data: xs.map(x => distro(x)) })
+  )));
+
+  const squarifyArMatrix = squarifyMatrix.map(row => row.map(treemap => (
+    1 / rootWeightedMean(treemap, n => offsetQuotient(n, 1.5))
+  )));
+
+  const squarifyOrMatrix = squarifyMatrix.map(row => row.map(treemap => (
+    weightedMean(treemap.children, orientation, n => n.value)
+  )));
+
+  return (<Container>
+    <Title>
+      Comparizon between Squarify and the Macro-Economic Metaphor algorithms
+      </Title>
+    <Sub>Countour plots are difference images between Squarify and the specified algorithm.</Sub>
+    {[
+      'Squarify',
+      'Eat the Poor',
+      'Eat the Rich',
+      'Subsidy',
+      'Welfare',
+    ].map((tilingName) => {
+      const treemapMatrix = distroMatrix.map(row => row.map(distro => (
+        calculateTreemap({ tile: tilingAlgorithms[tilingName].ratio(1.5), data: xs.map(x => distro(x)) })
+      )));
+
+      { /* const arMatrix = treemapMatrix.map(row => row.map(treemap => (
+        1 / rootWeightedMean(treemap, n => offsetQuotient(n, 1.5))
+      )));*/ }
+
+      const arMatrix = treemapMatrix.map((row, y) => row.map((treemap, x) => (
+        squarifyArMatrix[y][x] - 1 / rootWeightedMean(treemap, n => offsetQuotient(n, 1.5))
+      )));
+
+      const orientationMatrix = treemapMatrix.map((row, y) => row.map((treemap, x) => (
+        weightedMean(treemap.children, orientation, n => n.value) - squarifyOrMatrix[y][x]
+      )));
+      const tickvals = variances.filter((_, i) => !(i % 4));
+      return (<Row key={tilingName}>
+        <Heading>{tilingName}</Heading>
+        {
+          [
+            { sub: 'Weighted mean of inverse offset quotient for aspect ratio', z: arMatrix, zmin: 0, zmax: 1 },
+            { sub: 'Weighted mean of orientation', z: orientationMatrix, zmin: 0, zmax: 1 },
+          ].map(({ sub, z, zmax, zmin, reversescale }) => (<figure key={sub}>
+            <Sub>{sub}</Sub>
+            <Chart
+              data={[{
+                type: 'contour',
+                x: means,
+                y: variances,
+                z,
+                zmin,
+                zmax,
+                reversescale,
+                colorscale: positive,
                 colorbar: { thickness: 12, xpad: 5 },
                 line: { width: 0 },
               }]}
@@ -378,20 +473,20 @@ export const Experiment3B = () => {
       )));*/ }
 
       const arMatrix = treemapMatrix.map((row, y) => row.map((treemap, x) => (
-        squarifyArMatrix[y][x] - 1 / rootWeightedMean(treemap, n => offsetQuotient(n, 1.5))
+        1 / rootWeightedMean(treemap, n => offsetQuotient(n, 1.5)) - squarifyArMatrix[y][x] 
       )));
 
       const orientationMatrix = treemapMatrix.map((row, y) => row.map((treemap, x) => (
-        weightedMean(treemap.children, orientation, n => n.value) - squarifyOrMatrix[y][x]
+         squarifyOrMatrix[y][x] - weightedMean(treemap.children, orientation, n => n.value) 
       )));
       const tickvals = variances.filter((_, i) => !(i % 4));
       return (<Row key={tilingName}>
         <Heading>{tilingName}</Heading>
         {
           [
-            { sub: 'Weighted mean of inverse offset quotient for aspect ratio', z: arMatrix, zmin: 0, zmax: 1, reversescale: true },
-            { sub: 'Weighted mean of orientation', z: orientationMatrix, zmin: 0, zmax: 1, reversescale: true },
-          ].map(({ sub, z, zmax, zmin, reversescale }) => (<figure>
+            { sub: 'Weighted mean of inverse offset quotient for aspect ratio', z: arMatrix, zmin: 0, zmax: 1 },
+            { sub: 'Weighted mean of orientation', z: orientationMatrix, zmin: 0, zmax: 1 },
+          ].map(({ sub, z, zmax, zmin, reversescale }) => (<figure key={sub}>
             <Sub>{sub}</Sub>
             <Chart
               data={[{
@@ -402,7 +497,7 @@ export const Experiment3B = () => {
                 zmin,
                 zmax,
                 reversescale,
-                colorscale: contourColorScale,
+                colorscale: negative,
                 colorbar: { thickness: 12, xpad: 5 },
                 line: { width: 0 },
               }]}
@@ -430,12 +525,3 @@ export const Experiment3B = () => {
   </Container>
   );
 };
-
-
-const allExperiments = () => (<Body>
-  <Experiment1 />
-  <Experiment2 />
-  <Experiment3 />
-</Body>);
-
-export default allExperiments;
