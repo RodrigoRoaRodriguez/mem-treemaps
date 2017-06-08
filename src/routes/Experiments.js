@@ -15,8 +15,8 @@ import contourColorScale from '../utils/contourColorScale.json';
 import * as d3 from 'd3';
 
 
-const Title = styled.h1`margin: 4em 0 .5em 0;`;
-const Heading = styled.h2`margin: 4em 0 .5em 0; color: #888;`;
+const Title = styled.h1`margin: 4em 0 0 0;`;
+const Heading = styled.h2`margin: 4em 0 0 0; color: #888;`;
 const Sub = styled.h3`margin-bottom: .5em; color: #AAA;`;
 const Body = styled.main`
   flex-grow: 1;
@@ -30,7 +30,7 @@ const Row = styled.section`
 `;
 
 const Col = styled.figure`
-  flex: 1 0 ${({ width = '40%' }) => width};  
+  flex: 1 0 ${({ width = '42%' }) => width};  
 `;
 
 const Container = styled.main`
@@ -39,7 +39,7 @@ const Container = styled.main`
   flex-wrap: wrap;
   justify-content: space-around;
   & > :first-child{ margin-top: 2em; }
-  & > h1+h2 { margin-top: 1em; }
+  & h1+h2 { margin-top: 1em; }
   & h1,h2 {flex-basis:100%;}
 `;
 
@@ -166,36 +166,36 @@ export const Experiment2 = () => {
     font,
     yaxis: { ticksuffix: '%', title: 'Portion of total density' },
     xaxis: { title: 'Index' },
-    margin: { t: 6 },
+    margin: { t: 6, l: 75, r: 0 },
   };
 
   return (<Container>
     <Title>Experiment 2</Title>
-<Row>
+    <Row>
   <Col>
     <Heading>Distribution: Normal (variance: {count / 4}, mean: {count / 2})</Heading>
     <Chart
-    data={[{ x: xs, y: data.map(n => n * 100), type: 'bar', marker: { color: data.map(color) } }]}
-          layout={{height:height+60, ...layout} }
-  />
+      data={[{ x: xs, y: data.map(n => n * 100), type: 'bar', marker: { color: data.map(color) } }]}
+      layout={{ height, ...layout }}
+    />
   </Col>
-<Col>
-<Heading> {tilingName} treemap of {id} distribution, aspect ratio {ratio}:1, target {ratio}:1 </Heading>
-    
+  <Col>
+  <Heading> {tilingName} treemap of {id} distribution, aspect ratio {ratio}:1, target {ratio}:1 </Heading>
+
   <Treemap
-  className={`${tilingName}-${id}`}
-  height={height}
-  ratio={ratio}
-  granularity={100}
-  treemapArgs={{
+    className={`${tilingName}-${id}`}
+    height={height}
+    ratio={ratio}
+    granularity={100}
+    treemapArgs={{
     data,
     scale: 'log',
     root,
   }}
-    />
-    </Col>
+  />
+</Col>
 
-      <Col>
+  <Col>
         <Heading>Aspect ratio distribution</Heading>
         <Sub><br /></Sub>
         <Chart
@@ -209,7 +209,7 @@ export const Experiment2 = () => {
           })}
         />
       </Col>
-      <Col>
+  <Col>
         <Heading>Bimodal distribution for comparizon </Heading>
         <Sub>(Modes are the mean values of the 50 first and last elements)</Sub>
         <Chart
@@ -226,7 +226,7 @@ export const Experiment2 = () => {
           })}
         />
       </Col>
-    </Row>
+</Row>
     <Heading>Metrics </Heading>
     <Table data={aggregateMetrics(root, ratio)} columns={metricCols} />
   </Container>
@@ -239,7 +239,7 @@ export const Experiment3 = () => {
   const means = range(50);
   // const means = range(50).map(n => n/10);
   const expIncrement = i => (i - 8) / 4;
-  const variances = range(51).map(n => 2 ** (expIncrement(n)));
+  const variances = range(50).map(n => 2 ** (expIncrement(n)));
   const distroMatrix =
   variances.map(variance => means.map(mean => pdfs.normal({ mean, variance },
   )));
@@ -250,10 +250,10 @@ export const Experiment3 = () => {
   return (<Container>
     <Title>Distribution Matrix</Title>
     {[
-      { title: 'Normal distribution with exponential variance increments (Fixed μ = 25)', getName: i => `𝜎² = 2^${expIncrement(i)}`, dataset: varIncrements },
+      { title: 'Normal distribution with exponential variance increments (Fixed μ = 25)', getName: i => `𝜎² = ${Math.round(2 ** expIncrement(i) * 100) / 100}`, dataset: varIncrements, xName: 'x' },
       {
-        title: 'Normal distribution with linear mean increments (Fixed 𝜎² = 25)', getName: i => `μ = ${i}`, dataset: meanIncrements },
-    ].map(({ title, getName, dataset }) => (<Col>
+        title: 'Normal distribution with linear mean increments (Fixed 𝜎² = 25)', getName: i => `μ = ${i}`, dataset: meanIncrements, xName: 'y' },
+    ].map(({ title, getName, dataset, xName }) => (<Col>
       <Heading> {title} </Heading>
       <Chart
         data={dataset.map((pdf, i) => ({
@@ -263,7 +263,8 @@ export const Experiment3 = () => {
           y: percentalize(xs.map(n => pdf(n))),
         }))}
         layout={{
-          margin: { t: 6 },
+          xaxis: { title: xName },
+          margin: { t: 6, l: 75, r: 0, b: 65 },
           yaxis: { ticksuffix: '%', title: 'Portion of total density' },
         }}
       />
@@ -313,7 +314,7 @@ export const Experiment3 = () => {
               layout={{
                 height: 750,
                 width: 500,
-                margin: { t: 6 },
+                margin: { t: 6, l: 75, r: 0 },
                 xaxis: { title: 'Mean' },
                 yaxis: {
                   mirror: true,
@@ -360,7 +361,7 @@ export const Experiment3B = () => {
     <Title>
       Comparizon between Squarify and the Macro-Economic Metaphor algorithms
       </Title>
-      <Sub>Countour plots are difference images between Squarify and the specified algorithm.</Sub>
+    <Sub>Countour plots are difference images between Squarify and the specified algorithm.</Sub>
     {[
       'Squarify',
       'Eat the Poor',
@@ -372,9 +373,9 @@ export const Experiment3B = () => {
         calculateTreemap({ tile: tilingAlgorithms[tilingName].ratio(1.5), data: xs.map(x => distro(x)) })
       )));
 
-      {/*const arMatrix = treemapMatrix.map(row => row.map(treemap => (
+      { /* const arMatrix = treemapMatrix.map(row => row.map(treemap => (
         1 / rootWeightedMean(treemap, n => offsetQuotient(n, 1.5))
-      )));*/}
+      )));*/ }
 
       const arMatrix = treemapMatrix.map((row, y) => row.map((treemap, x) => (
         squarifyArMatrix[y][x] - 1 / rootWeightedMean(treemap, n => offsetQuotient(n, 1.5))
@@ -408,7 +409,7 @@ export const Experiment3B = () => {
               layout={{
                 height: 750,
                 width: 500,
-                margin: { t: 6 },
+                margin: { t: 6, l: 75, r: 0 },
                 xaxis: { title: 'Mean' },
                 yaxis: {
                   mirror: true,
