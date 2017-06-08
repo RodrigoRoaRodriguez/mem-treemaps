@@ -297,7 +297,7 @@ export const Experiment3 = () => {
             { sub: 'Weighted mean of inverse offset quotient for aspect ratio', z: arMatrix, zmin: 1, zmax: 2 },
             { sub: 'Weighted mean of orientation', z: orientationMatrix, zmin: 0, zmax: 1, reversescale: true },
           ].map(({ sub, z, zmax, zmin, reversescale }) => (<figure>
-            <Sub>Weighted mean of inverse offset quotient for aspect ratio</Sub>
+            <Sub>{sub}</Sub>
             <Chart
               data={[{
                 type: 'contour',
@@ -392,7 +392,7 @@ export const Experiment3B = () => {
             { sub: 'Weighted mean of inverse offset quotient for aspect ratio', z: arMatrix, zmin: 0, zmax: 1, reversescale: true },
             { sub: 'Weighted mean of orientation', z: orientationMatrix, zmin: 0, zmax: 1, reversescale: true },
           ].map(({ sub, z, zmax, zmin, reversescale }) => (<figure>
-            <Sub>Weighted mean of inverse offset quotient for aspect ratio</Sub>
+            <Sub>{sub}</Sub>
             <Chart
               data={[{
                 type: 'contour',
