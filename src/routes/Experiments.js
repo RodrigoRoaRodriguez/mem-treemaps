@@ -173,7 +173,7 @@ export const Experiment2 = () => {
     <Title>Experiment 2</Title>
     <Row>
   <Col>
-    <Heading>Distribution: Normal (variance: {count / 4}, mean: {count / 2})</Heading>
+    <Heading>Distribution: Zipf (s = 1)</Heading>
     <Chart
       data={[{ x: xs, y: data.map(n => n * 100), type: 'bar', marker: { color: data.map(color) } }]}
       layout={{ height, ...layout }}
