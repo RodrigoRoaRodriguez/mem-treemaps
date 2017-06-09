@@ -238,7 +238,7 @@ export const Experiment3A = () => {
   // const means = range(50);
   const means = range(50);
   // const means = range(50).map(n => n/10);
-  const expIncrement = i => (i - 8) / 4;
+  const expIncrement = i => i / 4 - 2;
   const variances = range(50).map(n => 2 ** (expIncrement(n)));
   const distroMatrix =
   variances.map(variance => means.map(mean => pdfs.normal({ mean, variance },
@@ -250,9 +250,9 @@ export const Experiment3A = () => {
   return (<Container>
     <Title>Distribution Matrix</Title>
     {[
-      { title: 'Normal distribution with exponential variance increments (Fixed μ = 25)', getName: i => `𝜎² = ${Math.round(2 ** expIncrement(i) * 100) / 100}`, dataset: varIncrements, xName: 'x' },
+      { title: 'Normal distribution with exponential variance increments (Fixed μ = 25)', getName: i => `𝜎² = ${Math.round(2 ** expIncrement(i) * 100) / 100}`, dataset: varIncrements, xName: 'y' },
       {
-        title: 'Normal distribution with linear mean increments (Fixed 𝜎² = 25)', getName: i => `μ = ${i}`, dataset: meanIncrements, xName: 'y' },
+        title: 'Normal distribution with linear mean increments (Fixed 𝜎² = 25)', getName: i => `μ = ${i}`, dataset: meanIncrements, xName: 'x' },
     ].map(({ title, getName, dataset, xName }) => (<Col>
       <Heading> {title} </Heading>
       <Chart
@@ -312,8 +312,8 @@ export const Experiment3A = () => {
                 line: { width: 0 },
               }]}
               layout={{
-                height: 750,
-                width: 500,
+                height: 800,
+                width: 600,
                 margin: { t: 6, l: 75, r: 0 },
                 xaxis: { title: 'Mean' },
                 yaxis: {
@@ -484,8 +484,8 @@ export const Experiment3B = () => {
         <Heading>{tilingName}</Heading>
         {
           [
-            { sub: 'Weighted mean of inverse offset quotient for aspect ratio', z: arMatrix, zmin: 0, zmax: 1 },
-            { sub: 'Weighted mean of orientation', z: orientationMatrix, zmin: 0, zmax: 1 },
+            { sub: 'Weighted mean of inverse offset quotient for aspect ratio', z: arMatrix, zmin: -1.1, zmax: 0.1, reversescale:true },
+            { sub: 'Weighted mean of orientation', z: orientationMatrix, zmin: -1.1, zmax: 0.1, reversescale:true },
           ].map(({ sub, z, zmax, zmin, reversescale }) => (<figure key={sub}>
             <Sub>{sub}</Sub>
             <Chart
@@ -498,7 +498,7 @@ export const Experiment3B = () => {
                 zmax,
                 reversescale,
                 colorscale: negative,
-                colorbar: { thickness: 12, xpad: 5 },
+                colorbar: { thickness: 12, xpad: 7 },
                 line: { width: 0 },
               }]}
               layout={{
