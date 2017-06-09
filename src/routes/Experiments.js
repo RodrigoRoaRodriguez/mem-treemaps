@@ -378,18 +378,18 @@ export const Experiment3C = () => {
       )));*/ }
 
       const arMatrix = treemapMatrix.map((row, y) => row.map((treemap, x) => (
-        squarifyArMatrix[y][x] - 1 / rootWeightedMean(treemap, n => offsetQuotient(n, 1.5))
+        1 / rootWeightedMean(treemap, n => offsetQuotient(n, 1.5)) - squarifyArMatrix[y][x]
       )));
 
       const orientationMatrix = treemapMatrix.map((row, y) => row.map((treemap, x) => (
-        weightedMean(treemap.children, orientation, n => n.value) - squarifyOrMatrix[y][x]
+        weightedMean(treemap.children, orientation, n => n.value)  - squarifyOrMatrix[y][x]
       )));
       const tickvals = variances.filter((_, i) => !(i % 4));
       return (<Row key={tilingName}>
         <Heading>{tilingName}</Heading>
         {
           [
-            { sub: 'Weighted mean of inverse offset quotient for aspect ratio', z: arMatrix, zmin: 0, zmax: 1 },
+            { sub: 'Weighted mean of inverse offset quotient for aspect ratio', z: arMatrix, zmin: -1, zmax: 0, reversescale: true },
             { sub: 'Weighted mean of orientation', z: orientationMatrix, zmin: 0, zmax: 1 },
           ].map(({ sub, z, zmax, zmin, reversescale }) => (<figure key={sub}>
             <Sub>{sub}</Sub>
@@ -399,8 +399,8 @@ export const Experiment3C = () => {
                 x: means,
                 y: variances,
                 z,
-                zmin,
-                zmax,
+                zmin: zmin-0.1,
+                zmax : zmax+0.1,
                 reversescale,
                 colorscale: positive,
                 colorbar: { thickness: 12, xpad: 5 },
@@ -473,19 +473,19 @@ export const Experiment3B = () => {
       )));*/ }
 
       const arMatrix = treemapMatrix.map((row, y) => row.map((treemap, x) => (
-        1 / rootWeightedMean(treemap, n => offsetQuotient(n, 1.5)) - squarifyArMatrix[y][x] 
+        1 / rootWeightedMean(treemap, n => offsetQuotient(n, 1.5)) - squarifyArMatrix[y][x]
       )));
 
       const orientationMatrix = treemapMatrix.map((row, y) => row.map((treemap, x) => (
-         squarifyOrMatrix[y][x] - weightedMean(treemap.children, orientation, n => n.value) 
+        weightedMean(treemap.children, orientation, n => n.value) - squarifyOrMatrix[y][x]
       )));
       const tickvals = variances.filter((_, i) => !(i % 4));
       return (<Row key={tilingName}>
         <Heading>{tilingName}</Heading>
         {
           [
-            { sub: 'Weighted mean of inverse offset quotient for aspect ratio', z: arMatrix, zmin: -1.1, zmax: 0.1, reversescale:true },
-            { sub: 'Weighted mean of orientation', z: orientationMatrix, zmin: -1.1, zmax: 0.1, reversescale:true },
+            { sub: 'Weighted mean of inverse offset quotient for aspect ratio', z: arMatrix, zmin: 0, zmax: 1 },
+            { sub: 'Weighted mean of orientation', z: orientationMatrix, zmin: -1, zmax: 0, reversescale:true },
           ].map(({ sub, z, zmax, zmin, reversescale }) => (<figure key={sub}>
             <Sub>{sub}</Sub>
             <Chart
@@ -494,8 +494,8 @@ export const Experiment3B = () => {
                 x: means,
                 y: variances,
                 z,
-                zmin,
-                zmax,
+                zmin: zmin-0.1,
+                zmax : zmax+0.1,
                 reversescale,
                 colorscale: negative,
                 colorbar: { thickness: 12, xpad: 7 },
