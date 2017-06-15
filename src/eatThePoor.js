@@ -6,6 +6,7 @@ export default function eatThePoor({ children, value }, x0, y0, x1, y1, ratio) {
   const height = y1 - y0;
 
   for (let start = 0; start < children.length;) {
+    if (!children[start].value) { start++; continue; } // Skip empty nodes.
     const width = x1 - x;
 
     const alpha = width / height / remainingValue / ratio;
