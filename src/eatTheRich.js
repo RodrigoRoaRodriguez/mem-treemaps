@@ -6,7 +6,7 @@ export default function eatTheRich({ children, value }, x0, y0, x1, y1, ratio) {
   const height = y1 - y0;
 
   for (let end = children.length, start = 1; end >= 1; end -= start) {
-    if (!children[end - 1].value) { end--; continue; } // Skip empty nodes.
+    if (children[end - 1].value <= 0) { end--; continue; } // Skip empty nodes.
     const width = x - x0;
 
     const alpha = width / height / remainingValue / ratio;
@@ -15,7 +15,6 @@ export default function eatTheRich({ children, value }, x0, y0, x1, y1, ratio) {
     let minValue = children[end - start].value;
     let maxValue = minValue;
     let valueByArea = children[end - start].value ** 2 * alpha;
-
     let worst = Math.max(maxValue / valueByArea, valueByArea / minValue);
     // Keep adding nodes while the aspect ratio maintains or improves.
     for (; end - start >= 0; ++start) {
@@ -25,7 +24,7 @@ export default function eatTheRich({ children, value }, x0, y0, x1, y1, ratio) {
       sumValue += nodeValue;
       valueByArea = sumValue ** 2 * alpha;
       const newWorst = Math.max(maxValue / valueByArea, valueByArea / minValue);
-      if ( newWorst > worst ) { // It added too many and ratio got worse
+      if (newWorst > worst) { // It added too many and ratio got worse
         sumValue -= nodeValue; // Roll back last one.
         break;
       }
