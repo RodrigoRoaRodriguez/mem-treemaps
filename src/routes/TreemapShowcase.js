@@ -13,7 +13,7 @@ const distroArgs = {
   zipf: { count, scale: 'log' },
   uniform: { count, scale: 'index' },
   normal: { count, variance: count / 4, mean: count / 2, scale: 'linear' },
-  lognormal: { count, variance: count / 2, mean: count / 2, scale: 'linear' },
+  logNormal: { count, variance: count / 2, mean: count / 2, scale: 'linear' },
   // normal: { count, variance: Math.sqrt(2), mean: 1, scale: 'linear' }, // The singularity
 };
 

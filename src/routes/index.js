@@ -3,9 +3,10 @@ import TreemapShowcase from './TreemapShowcase';
 import Experiments from './Experiments';
 import { Experiment1, Experiment2, Experiment3A, Experiment3B, Experiment3C } from './Experiments';
 import Distributions from './Distributions';
+import Home from './Home';
 
 const routes = [
-  // { name: 'Home', component: Home, path: '' },
+  { name: 'Home', component: Home, path: '' },
   { name: 'Tilings Showcase', component: TreemapShowcase, path: 'tilings' },
   { name: 'Experiment 1', component: Experiment1, path: 'experiment1' },
   { name: 'Experiment 2', component: Experiment2, path: 'experiment2' },
