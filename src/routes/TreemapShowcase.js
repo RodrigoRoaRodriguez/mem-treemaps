@@ -4,15 +4,10 @@ import * as d3 from 'd3';
 import * as treemapTilings from '../economic-metaphor-treemap-tilings/index';
 import * as pdfs from '../statistical-distributions/index';
 import { range, combinations } from '../statistical-distributions/jsutils/index';
-import { drawTreemap } from '../utils/simpleTreemap';
-import { aspectRatio, oaar, foaar, offsetFactor, offsetQuotient, mean, weightedMean } from '../utils/treemapMetrics';
 import Treemap from '../components/Treemap';
 
-const PHI = (1 + Math.sqrt(5)) / 2;
-
-// const count = 20;
 const count = 25;
-const xs = range(count);
+const xs = range(count).map(n => n + 1);
 
 const distroArgs = {
   zipf: { count, scale: 'log' },
@@ -25,14 +20,14 @@ const distroArgs = {
 const RATIO = 1.5;
 
 const tilingAlgorithms = {
-  Slice: d3.treemapSlice,
-  Dice: d3.treemapDice,
-  'Slice and Dice': d3.treemapSliceDice,
-  Binary: d3.treemapBinary,
-  Squarify: d3.treemapSquarify.ratio(RATIO),
-  'Eat the Poor': treemapTilings.eatThePoor.ratio(RATIO),
-  'Eat the Rich': treemapTilings.eatTheRich.ratio(RATIO),
-  Welfare: treemapTilings.welfare.ratio(RATIO),
+  // Slice: d3.treemapSlice,
+  // Dice: d3.treemapDice,
+  // 'Slice and Dice': d3.treemapSliceDice,
+  // Binary: d3.treemapBinary,
+  // Squarify: d3.treemapSquarify.ratio(RATIO),
+  // 'Eat the Poor': treemapTilings.eatThePoor.ratio(RATIO),
+  // 'Eat the Rich': treemapTilings.eatTheRich.ratio(RATIO),
+  // Welfare: treemapTilings.welfare.ratio(RATIO),
   Subsidy: treemapTilings.subsidy.ratio(RATIO),
 };
 
@@ -54,7 +49,7 @@ const distributions = [
 ];
 
 
-function formatData([distro, tilingName], ratio = PHI) {
+function formatData([distro, tilingName], ratio = 1) {
   const distribution = pdfs[distro](distroArgs[distro]);
   const data = xs.map(x => distribution(x));
   return ({ tilingName,
@@ -77,15 +72,16 @@ class Showcase extends Component {
       {
         combinations([distributions, algorithms])
         .map(d => formatData(d, RATIO))
-        .map(({ tilingName, distro, ratio, ...rest }) => 
-        <div key={tilingName + distro + ratio.toFixed(2)}>
-          <Title> {tilingName} {distro} {ratio.toFixed(2)} </Title>
-          <Treemap
-            className={`${tilingName}-${distro}`}
-            ratio={ratio}
-            treemapArgs={rest}
-          />
-        </div>,
+        .map(({ tilingName, distro, ratio, ...rest }) =>
+          (<div key={tilingName + distro + ratio.toFixed(2)}>
+            <Title> {tilingName} {distro} {ratio.toFixed(2)} </Title>
+            <Treemap
+              height={'40wh'}
+              className={`${tilingName}-${distro}`}
+              ratio={ratio}
+              treemapArgs={rest}
+            />
+          </div>),
           )
         }
     </Container>
